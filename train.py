@@ -42,3 +42,16 @@ with open('model_final.pkl', 'wb') as f:
     }, f)
 
 print("✅ Model Berhasil Disimpan sebagai 'model_final.pkl'")
+
+from sklearn.metrics import classification_report, accuracy_score
+
+# Membuat prediksi pada data testing
+y_pred = model.predict(X_test)
+
+# Melihat Akurasi
+accuracy = accuracy_score(y_test, y_pred)
+print(f"\n📊 AKURASI MODEL: {accuracy * 100:.2f}%")
+
+# Melihat Laporan Detail per Kategori (Precision, Recall, F1-Score)
+print("\n📋 LAPORAN KLASIFIKASI:")
+print(classification_report(y_test, y_pred, target_names=le_dict['NObeyesdad'].classes_))

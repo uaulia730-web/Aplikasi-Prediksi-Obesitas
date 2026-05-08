@@ -1,105 +1,88 @@
-#================
-#app py
-#================
 import streamlit as st
 import pandas as pd
-import pickle
 import numpy as np
+from catboost import CatBoostClassifier
+from sklearn.model_selection import train_test_split
+from imblearn.over_sampling import SMOTE
+from sklearn.preprocessing import LabelEncoder
 
-# Konfigurasi Halaman
-st.set_page_config(page_title="Obesity AI Expert", page_icon="🥗", layout="wide")
+# ==========================================
+# 1. KONFIGURASI HALAMAN
+# ==========================================
+st.set_page_config(page_title="Obesity AI Advisor", page_icon="🥗", layout="wide")
 
-# CSS Custom untuk UI Premium
-st.markdown("""
-    <style>
-    .stApp { background: #f0f2f5; }
-    .card { padding: 20px; border-radius: 15px; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 20px; border: 1px solid #e0e0e0; }
-    .main-title { font-size: 45px; font-weight: 800; color: #1b5e20; text-align: center; margin-bottom: 10px; }
-    .stButton>button { width: 100%; border-radius: 30px; height: 3.5em; background: linear-gradient(90deg, #2e7d32, #43a047); color: white; font-weight: bold; border: none; font-size: 18px; }
-    </style>
-    """, unsafe_allow_html=True)
-
-# Load Model (Hanya sekali)
+# Fungsi untuk Training Otomatis (Hanya jalan 1x)
 @st.cache_resource
-def get_model():
-    with open('model_final.pkl', 'rb') as f:
-        return pickle.load(f)
-
-data_pack = get_model()
-model = data_pack['model']
-encoders = data_pack['encoders']
-features = data_pack['features']
-classes = data_pack['classes']
-
-st.markdown("<h1 class='main-title'>🥗 Obesity AI Expert System</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #555;'>Global Health Diagnostic Tool - Powered by CatBoost AI</p>", unsafe_allow_html=True)
-st.write("---")
-
-# Input Section
-with st.container():
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.subheader("👤 Bio Profile")
-        gender = st.selectbox("Gender", ["Female", "Male"])
-        age = st.number_input("Age", 1, 100, 25)
-        height = st.number_input("Height (m)", 1.0, 2.5, 1.7)
-        weight = st.number_input("Weight (kg)", 10, 250, 70)
-        family = st.selectbox("Family History Overweight?", ["yes", "no"])
-        st.markdown('</div>', unsafe_allow_html=True)
-    with c2:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.subheader("🍽️ Eating Habits")
-        favc = st.selectbox("High Calorie Food?", ["yes", "no"])
-        fcvc = st.slider("Vegetables Consumption", 1.0, 3.0, 2.0)
-        ncp = st.slider("Number of Main Meals", 1.0, 4.0, 3.0)
-        caec = st.selectbox("Eating between Meals?", ["no", "Sometimes", "Frequently", "Always"])
-        ch2o = st.slider("Water Consumption", 1.0, 3.0, 2.0)
-        st.markdown('</div>', unsafe_allow_html=True)
-    with c3:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.subheader("🏃 Lifestyle")
-        smoke = st.selectbox("Smoking?", ["yes", "no"])
-        scc = st.selectbox("Calories Monitoring?", ["yes", "no"])
-        faf = st.slider("Physical Activity (0-3)", 0.0, 3.0, 1.0)
-        tue = st.slider("Tech Usage (0-2)", 0.0, 2.0, 1.0)
-        calc = st.selectbox("Alcohol Consumption?", ["no", "Sometimes", "Frequently", "Always"])
-        mtrans = st.selectbox("Transportation", ["Public_Transportation", "Walking", "Automobile", "Motorbike", "Bike"])
-        st.markdown('</div>', unsafe_allow_html=True)
-
-if st.button("🚀 ANALYZE MY HEALTH"):
-    bmi = weight / (height**2)
-    inputs = {'Gender': gender, 'Age': age, 'Height': height, 'Weight': weight, 'family_history_with_overweight': family, 'FAVC': favc, 'FCVC': fcvc, 'NCP': ncp, 'CAEC': caec, 'SMOKE': smoke, 'CH2O': ch2o, 'SCC': scc, 'FAF': faf, 'TUE': tue, 'CALC': calc, 'MTRANS': mtrans}
-    input_df = pd.DataFrame([inputs])[features]
-
-    for col in input_df.columns:
-        if col in encoders:
-            input_df[col] = encoders[col].transform(input_df[col].astype(str))
-
-    pred = model.predict(input_df)[0][0]
-    res_label = classes[int(pred)]
-
-    # Result UI
-    st.markdown("---")
-    color = "#2ecc71" if "Normal" in res_label else "#f39c12" if "Overweight" in res_label else "#e74c3c"
+def initial_training():
+    # URL file excel kamu di github (Pastikan file excel sudah diupload ke repo github yang sama)
+    # Jika file excel ada di folder yang sama di github, cukup tulis namanya
+    path = "KEL.2 obesitas Projek MCL 2.xlsx" 
     
-    st.markdown(f"""
-        <div style="background-color: {color}; color: white; padding: 30px; border-radius: 20px; text-align: center;">
-            <h2 style="margin:0;">DIAGNOSIS: {res_label.replace('_', ' ')}</h2>
-            <p style="font-size: 20px; margin:0;">BMI Score: {bmi:.2f}</p>
-        </div>
-    """, unsafe_allow_html=True)
+    df = pd.read_excel(path, sheet_name=0)
+    
+    le_dict = {}
+    cat_cols = df.select_dtypes(include=['object']).columns
+    for col in cat_cols:
+        le = LabelEncoder()
+        df[col] = le.fit_transform(df[col].astype(str))
+        le_dict[col] = le
 
-    # Health Tips Database
-    st.write("### 💡 Expert Health Advice")
-    tips = {
-        "Insufficient_Weight": "Tingkatkan asupan kalori sehat dan fokus pada latihan pembentukan otot.",
-        "Normal_Weight": "Luar biasa! Pertahankan pola makan seimbang dan tetap aktif secara fisik.",
-        "Overweight_Level_I": "Kurangi porsi makan sedikit demi sedikit dan tambahkan aktivitas kardio 30 menit/hari.",
-        "Overweight_Level_II": "Batasi asupan gula dan lemak jenuh. Fokus pada konsumsi sayuran (FCVC) lebih banyak.",
-        "Obesity_Type_I": "Mulailah program penurunan berat badan yang konsisten. Monitor kalori (SCC) sangat disarankan.",
-        "Obesity_Type_II": "Konsultasikan dengan ahli gizi. Batasi makanan cepat saji (FAVC) secara drastis.",
-        "Obesity_Type_III": "Prioritas kesehatan tinggi. Kurangi waktu gadget (TUE) dan ganti dengan berjalan kaki atau olahraga air."
-    }
-    st.info(tips.get(res_label, "Tetap jaga kesehatan dan pola makan teratur."))
-    st.balloons()
+    X = df.drop('NObeyesdad', axis=1)
+    y = df['NObeyesdad']
+
+    smote = SMOTE(random_state=42)
+    X_res, y_res = smote.fit_resample(X, y)
+
+    X_train, X_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.2, random_state=42)
+
+    model = CatBoostClassifier(iterations=500, learning_rate=0.1, depth=6, verbose=0)
+    model.fit(X_train, y_train)
+    
+    return model, le_dict, X.columns.tolist(), le_dict['NObeyesdad'].classes_.tolist()
+
+# Jalankan proses belajar
+try:
+    model, encoders, feature_names, target_classes = initial_training()
+    st.sidebar.success("✅ AI Brain Ready!")
+except:
+    st.error("❌ File Excel belum ditemukan di GitHub. Tolong upload file 'KEL.2 obesitas Projek MCL 2.xlsx' ke GitHub kamu.")
+    st.stop()
+
+# ==========================================
+# 2. TAMPILAN WEB (SAMA SEPERTI SEBELUMNYA)
+# ==========================================
+st.title("🥗 Obesity AI Advisor (Live Edition)")
+st.write("Sistem ini belajar langsung dari data Excel Anda untuk memberikan prediksi akurat.")
+
+# Form Input
+col1, col2 = st.columns(2)
+with col1:
+    gender = st.selectbox("Gender", ["Female", "Male"])
+    age = st.number_input("Age", 1, 100, 20)
+    height = st.number_input("Height (m)", 1.0, 2.5, 1.65)
+    weight = st.number_input("Weight (kg)", 10, 250, 60)
+    family = st.selectbox("Family History Overweight?", ["yes", "no"])
+
+with col2:
+    favc = st.selectbox("High Calorie Food?", ["yes", "no"])
+    fcvc = st.slider("Vegetables Consumption", 1.0, 3.0, 2.0)
+    caec = st.selectbox("Eating between Meals?", ["no", "Sometimes", "Frequently", "Always"])
+    faf = st.slider("Physical Activity", 0.0, 3.0, 1.0)
+    mtrans = st.selectbox("Transportation", ["Public_Transportation", "Walking", "Automobile", "Motorbike", "Bike"])
+
+if st.button("🚀 ANALYZE NOW"):
+    bmi = weight / (height**2)
+    # Buat data dummy untuk kolom yang tidak ada di input sederhana
+    input_data = pd.DataFrame([[gender, age, height, weight, family, favc, fcvc, 2.0, caec, 'no', 2.0, 'no', faf, 1.0, 'no', mtrans]], 
+                            columns=feature_names)
+    
+    # Encoding
+    for col in input_data.columns:
+        if col in encoders:
+            input_data[col] = encoders[col].transform(input_data[col].astype(str))
+
+    pred = model.predict(input_data)[0][0]
+    final_res = target_classes[int(pred)]
+
+    st.success(f"### Result: {final_res}")
+    st.info(f"Your BMI: {bmi:.2f}")

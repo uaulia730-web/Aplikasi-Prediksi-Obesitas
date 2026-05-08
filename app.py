@@ -7,86 +7,39 @@ from imblearn.over_sampling import SMOTE
 from sklearn.preprocessing import LabelEncoder
 
 # ==========================================
-# 1. KONFIGURASI & STYLE PREMIUM
+# 1. KONFIGURASI & STYLE
 # ==========================================
 st.set_page_config(page_title="Obesity AI Advisor", page_icon="🥗", layout="wide")
 
 st.markdown("""
     <style>
-    .stApp { background-color: #f4f7f6; }
-    [data-testid="stSidebar"] { background-color: #1e3d33; color: white; }
-    .stTabs [data-baseweb="tab-list"] { gap: 10px; }
+    .main { background-color: #f8f9fa; }
+    .stTabs [data-baseweb="tab-list"] { gap: 24px; }
     .stTabs [data-baseweb="tab"] {
-        height: 60px; background-color: #ffffff;
-        border-radius: 12px 12px 0px 0px; padding: 10px 25px;
-        font-weight: 600; color: #1e3d33; border: 1px solid #e0e0e0;
+        height: 50px; white-space: pre-wrap; background-color: #ffffff;
+        border-radius: 10px 10px 0px 0px; gap: 1px; padding-top: 10px;
     }
-    .stTabs [aria-selected="true"] { 
-        background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%) !important; 
-        color: white !important; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
+    .stTabs [aria-selected="true"] { background-color: #2e7d32 !important; color: white !important; }
     .card {
-        padding: 25px; border-radius: 20px; background-color: white;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 25px;
-        border: 1px solid #efefef;
+        padding: 20px; border-radius: 15px; background-color: white;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px;
     }
-    .stButton>button {
-        width: 100%; border-radius: 50px; height: 3.5em;
-        background: linear-gradient(90deg, #d4af37, #b8860b);
-        color: white; font-weight: bold; font-size: 18px; border: none;
-        transition: 0.3s;
-    }
-    .stButton>button:hover { transform: scale(1.02); box-shadow: 0 8px 20px rgba(212,175,55,0.4); }
     </style>
     """, unsafe_allow_html=True)
 
-# ==========================================
-# 2. SISTEM BAHASA (DICTIONARY)
-# ==========================================
-with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/2737/2737140.png", width=80)
-    lang = st.radio("🌐 Select Language / Pilih Bahasa", ["Bahasa Indonesia", "English"])
-    st.divider()
-
-# Kamus Terjemahan
-text = {
-    "title": "🥗 Obesity AI Advisor" if lang == "English" else "🥗 Penasihat AI Obesitas",
-    "subtitle": "Smart Health Diagnostic based on Machine Learning" if lang == "English" else "Diagnostik Kesehatan Cerdas berbasis Machine Learning",
-    "tab1": "🎯 Prediction / Prediksi",
-    "tab2": "💡 Advice / Saran",
-    "tab3": "📚 Knowledge / Pengetahuan",
-    "input_header1": "👤 Personal Data / Data Diri",
-    "input_header2": "🍽️ Lifestyle / Gaya Hidup",
-    "gender": "Gender / Jenis Kelamin",
-    "age": "Age / Usia",
-    "height": "Height / Tinggi (m)",
-    "weight": "Weight / Berat (kg)",
-    "family": "Family History of Overweight? / Riwayat Obesitas Keluarga?",
-    "favc": "Frequent High Calorie Food? / Sering Makan Kalori Tinggi?",
-    "fcvc": "Vegetable Consumption (1-3) / Konsumsi Sayur (1-3)",
-    "caec": "Eating Between Meals? / Ngemil di Antara Waktu Makan?",
-    "faf": "Physical Activity Frequency (0-3) / Frekuensi Olahraga (0-3)",
-    "mtrans": "Main Transportation / Transportasi Utama",
-    "btn": "🚀 ANALYZE NOW / ANALISIS SEKARANG",
-    "result_header": "AI Diagnosis Result / Hasil Diagnosis AI",
-    "bmi_header": "Your BMI Score / Skor BMI Anda",
-    "info_tab2": "Please perform a prediction first." if lang == "English" else "Silakan lakukan prediksi terlebih dahulu.",
-    "bmi_table": "BMI Table Reference" if lang == "English" else "Referensi Tabel BMI"
-}
-
-# ==========================================
-# 3. TRAINING ENGINE (CACHED)
-# ==========================================
+# Fungsi untuk Training Otomatis
 @st.cache_resource
 def initial_training():
     path = "KEL.2 obesitas Projek MCL 2.xlsx" 
     df = pd.read_excel(path, sheet_name=0)
+    
     le_dict = {}
     cat_cols = df.select_dtypes(include=['object']).columns
     for col in cat_cols:
         le = LabelEncoder()
         df[col] = le.fit_transform(df[col].astype(str))
         le_dict[col] = le
+
     X = df.drop('NObeyesdad', axis=1)
     y = df['NObeyesdad']
     smote = SMOTE(random_state=42)
@@ -94,43 +47,49 @@ def initial_training():
     X_train, X_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.2, random_state=42)
     model = CatBoostClassifier(iterations=500, learning_rate=0.1, depth=6, verbose=0)
     model.fit(X_train, y_train)
+    
     return model, le_dict, X.columns.tolist(), le_dict['NObeyesdad'].classes_.tolist()
 
 try:
     model, encoders, feature_names, target_classes = initial_training()
+    st.sidebar.success("✅ AI Engine Ready")
 except:
-    st.error("Error: Excel file not found!")
+    st.error("❌ File Excel 'KEL.2 obesitas Projek MCL 2.xlsx' tidak ditemukan di GitHub.")
     st.stop()
 
 # ==========================================
-# 4. TAMPILAN MULTI-TAB
+# 2. NAVIGASI TAB (3 SEGMEN)
 # ==========================================
-st.markdown(f"<h1 style='text-align: center; color: #1e3d33;'>{text['title']}</h1>", unsafe_allow_html=True)
-st.markdown(f"<p style='text-align: center; color: #666;'>{text['subtitle']}</p>", unsafe_allow_html=True)
+tab1, tab2, tab3 = st.tabs(["🎯 Prediksi AI", "💡 Saran Kesehatan", "📚 Pengetahuan Umum"])
 
-t1, t2, t3 = st.tabs([text['tab1'], text['tab2'], text['tab3']])
+# ------------------------------------------
+# SEGMEN 1: PREDIKSI
+# ------------------------------------------
+with tab1:
+    st.title("🏃 Analisis Status Obesitas")
+    st.write("Masukkan data Anda untuk mendapatkan diagnosis instan dari kecerdasan buatan.")
+    
+    with st.container():
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown('<div class="card">', unsafe_allow_html=True)
+            gender = st.selectbox("Jenis Kelamin", ["Female", "Male"])
+            age = st.number_input("Usia", 1, 100, 20)
+            height = st.number_input("Tinggi Badan (m)", 1.0, 2.5, 1.65)
+            weight = st.number_input("Berat Badan (kg)", 10, 250, 60)
+            family = st.selectbox("Riwayat Keluarga Obesitas?", ["yes", "no"])
+            st.markdown('</div>', unsafe_allow_html=True)
 
-with t1:
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown(f'<div class="card"><h3>{text["input_header1"]}</h3>', unsafe_allow_html=True)
-        gender = st.selectbox(text["gender"], ["Female", "Male"])
-        age = st.number_input(text["age"], 1, 100, 21)
-        height = st.number_input(text["height"], 1.0, 2.5, 1.65)
-        weight = st.number_input(text["weight"], 10, 250, 60)
-        family = st.selectbox(text["family"], ["yes", "no"])
-        st.markdown('</div>', unsafe_allow_html=True)
+        with col2:
+            st.markdown('<div class="card">', unsafe_allow_html=True)
+            favc = st.selectbox("Suka Makanan Berkalori Tinggi?", ["yes", "no"])
+            fcvc = st.slider("Frekuensi Konsumsi Sayur (1-3)", 1.0, 3.0, 2.0)
+            caec = st.selectbox("Kebiasaan Ngemil?", ["no", "Sometimes", "Frequently", "Always"])
+            faf = st.slider("Aktivitas Fisik (FAF)", 0.0, 3.0, 1.0)
+            mtrans = st.selectbox("Transportasi Utama", ["Public_Transportation", "Walking", "Automobile", "Motorbike", "Bike"])
+            st.markdown('</div>', unsafe_allow_html=True)
 
-    with col2:
-        st.markdown(f'<div class="card"><h3>{text["input_header2"]}</h3>', unsafe_allow_html=True)
-        favc = st.selectbox(text["favc"], ["yes", "no"])
-        fcvc = st.slider(text["fcvc"], 1.0, 3.0, 2.0)
-        caec = st.selectbox(text["caec"], ["no", "Sometimes", "Frequently", "Always"])
-        faf = st.slider(text["faf"], 0.0, 3.0, 1.0)
-        mtrans = st.selectbox(text["mtrans"], ["Public_Transportation", "Walking", "Automobile", "Motorbike", "Bike"])
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    if st.button(text["btn"]):
+    if st.button("🚀 MULAI ANALISIS"):
         bmi = weight / (height**2)
         input_data = pd.DataFrame([[gender, age, height, weight, family, favc, fcvc, 2.0, caec, 'no', 2.0, 'no', faf, 1.0, 'no', mtrans]], 
                                 columns=feature_names)
@@ -140,39 +99,68 @@ with t1:
 
         pred = model.predict(input_data)[0][0]
         final_res = target_classes[int(pred)].replace('_', ' ')
-        
-        st.session_state['last_result'] = final_res
-        
-        st.divider()
-        res_c1, res_c2 = st.columns(2)
-        res_c1.metric(text["result_header"], final_res)
-        res_c2.metric(text["bmi_header"], f"{bmi:.2f}")
+
+        st.markdown("---")
+        c1, c2 = st.columns(2)
+        c1.metric("Hasil Diagnosis AI", final_res)
+        c2.metric("Skor BMI Anda", f"{bmi:.2f}")
+        st.session_state['last_result'] = final_res # Simpan hasil untuk Tab Saran
         st.balloons()
 
-with t2:
-    st.subheader(text["tab2"])
+# ------------------------------------------
+# SEGMEN 2: SARAN KESEHATAN
+# ------------------------------------------
+with tab2:
+    st.title("💡 Saran Berdasarkan Hasil AI")
     if 'last_result' not in st.session_state:
-        st.warning(text["info_tab2"])
+        st.info("Silakan lakukan prediksi terlebih dahulu di Tab Prediksi.")
     else:
         res = st.session_state['last_result']
-        st.info(f"Analysis for: **{res}**")
-        # Logika saran dwibahasa bisa ditambahkan di sini sesuai kategori
+        st.success(f"Saran untuk kategori: **{res}**")
+        
+        col_saran1, col_saran2 = st.columns(2)
+        with col_saran1:
+            st.subheader("🥗 Pola Makan")
+            if "Obesity" in res:
+                st.write("- Kurangi asupan kalori harian secara bertahap.\n- Fokus pada protein dan serat tinggi.\n- Hindari minuman manis dan gorengan.")
+            elif "Overweight" in res:
+                st.write("- Mulai batasi porsi karbohidrat.\n- Perbanyak sayuran pada setiap jam makan.")
+            else:
+                st.write("- Pertahankan gizi seimbang.\n- Pastikan asupan nutrisi mencukupi kebutuhan harian.")
+        
+        with col_saran2:
+            st.subheader("🚴 Aktivitas Fisik")
+            if "Obesity" in res:
+                st.write("- Mulai dengan jalan santai 30 menit setiap hari.\n- Konsultasikan dengan pelatih fisik untuk olahraga beban.")
+            elif "Overweight" in res:
+                st.write("- Tingkatkan frekuensi olahraga menjadi 3-4 kali seminggu.\n- Gabungkan kardio dan latihan beban.")
+            else:
+                st.write("- Tetap aktif bergerak.\n- Cobalah variasi olahraga baru untuk menjaga massa otot.")
 
-with t3:
-    st.subheader(text["bmi_table"])
-    bmi_data = {
-        "Category / Kategori": ["Underweight", "Normal", "Overweight", "Obesity I", "Obesity II", "Obesity III"],
-        "BMI Range / Rentang": ["< 18.5", "18.5 - 24.9", "25.0 - 29.9", "30.0 - 34.9", "35.0 - 39.9", "> 40.0"]
-    }
-    st.table(pd.DataFrame(bmi_data))
+# ------------------------------------------
+# SEGMEN 3: PENGETAHUAN UMUM
+# ------------------------------------------
+with tab3:
+    st.title("📚 Pengetahuan Umum Obesitas")
     
-    st.markdown("---")
-    st.markdown("### 🧬 Factors / Faktor")
-    if lang == "English":
-        st.write("Obesity is caused by complex factors including genetics, high calorie intake, and sedentary lifestyle.")
-    else:
-        st.write("Obesitas disebabkan oleh faktor kompleks termasuk genetika, asupan kalori tinggi, dan kurangnya aktivitas fisik.")
+    st.markdown("""
+    ### Apa itu Obesitas?
+    Obesitas adalah kondisi medis berupa penumpukan lemak tubuh berlebih yang dapat berdampak buruk bagi kesehatan.
+    
+    ### Cara Membaca Skor BMI:
+    """)
+    
+    st.table(pd.DataFrame({
+        "Kategori BMI": ["Kurang Berat Badan", "Normal", "Kelebihan Berat Badan", "Obesitas Tipe I", "Obesitas Tipe II", "Obesitas Tipe III"],
+        "Rentang Skor": ["< 18.5", "18.5 - 24.9", "25.0 - 29.9", "30.0 - 34.9", "35.0 - 39.9", "> 40.0"]
+    }))
 
-
-
-[Image of BMI classification chart]
+    
+    
+    st.markdown("""
+    ### Faktor Risiko Utama:
+    1. **Genetika:** Riwayat keluarga sangat berpengaruh.
+    2. **Gaya Hidup:** Kurangnya aktivitas fisik (sedenter).
+    3. **Pola Makan:** Konsumsi makanan tinggi kalori dan gula secara berlebih.
+    4. **Kurang Tidur:** Dapat mengganggu hormon pengatur rasa lapar.
+    """)

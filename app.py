@@ -135,22 +135,28 @@ with tab1:
         st.markdown("---")
         st.subheader("📊 Hasil Analisis Medis")
         
-        color_map = {
-            "Insufficient_Weight": "#3B82F6", "Normal_Weight": "#10B981",
-            "Overweight_Level_I": "#F59E0B", "Overweight_Level_II": "#F97316",
-            "Obesity_Type_I": "#EF4444", "Obesity_Type_II": "#DC2626", "Obesity_Type_III": "#991B1B"
-        }
-        bg_color = color_map.get(hasil_prediksi, "#1E3A8A")
-        
-        st.markdown(f"""
-            <div style='background-color: {bg_color}; padding: 20px; border-radius: 10px; color: white; text-align: center; margin-bottom: 20px;'>
-                <p style='margin: 0; font-size: 1.1rem; font-weight: 300;'>Status Klasifikasi Pengguna:</p>
-                <h2 style='margin: 5px 0 0 0; color: white;'>{hasil_prediksi.replace('_', ' ')}</h2>
-                <p style='margin: 10px 0 0 0; font-size: 0.9rem; opacity: 0.9;'>
-                    Tingkat Keyakinan Model Klasifikasi: <b>{confidence_score:.2f}%</b>
-                </p>
-            </div>
-        """, unsafe_allowed_html=True)
+        # ======= GANTI DENGAN KODE AMAN DAN INDAH INI =======
+st.markdown("---")
+st.subheader("📊 Hasil Analisis Medis")
+
+# Menampilkan hasil dengan komponen bawaan yang kebal dari error Python 3.14
+if "Obesity" in hasil_prediksi:
+    st.error(f"⚠️ **STATUS: {hasil_prediksi.replace('_', ' ')}** (Tingkat Keyakinan AI: {confidence_score:.2f}%)")
+elif "Overweight" in hasil_prediksi:
+    st.warning(f"⚠️ **STATUS: {hasil_prediksi.replace('_', ' ')}** (Tingkat Keyakinan AI: {confidence_score:.2f}%)")
+elif "Normal" in hasil_prediksi:
+    st.success(f"✅ **STATUS: {hasil_prediksi.replace('_', ' ')}** (Tingkat Keyakinan AI: {confidence_score:.2f}%)")
+else:
+    st.info(f"ℹ️ **STATUS: {hasil_prediksi.replace('_', ' ')}** (Tingkat Keyakinan AI: {confidence_score:.2f}%)")
+
+# Menampilkan metrik visual kembar di bawahnya
+res_col1, res_col2 = st.columns(2)
+with res_col1:
+    st.metric(label="Hasil Diagnosis Akhir", value=hasil_prediksi.replace('_', ' '))
+with res_col2:
+    st.metric(label="Nilai Indeks Massa Tubuh (BMI)", value=f"{bmi:.2f}")
+
+st.balloons()
         
         res_col1, res_col2 = st.columns(2)
         with res_col1:

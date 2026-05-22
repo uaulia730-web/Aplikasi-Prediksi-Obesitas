@@ -15,47 +15,64 @@ st.set_page_config(
 )
 
 # ==========================================
-# 2. INJEKSI CUSTOM CSS (MEMPERCANTIK UI & KONTRAS WAA)
+# 2. INJEKSI CUSTOM CSS (MEMPERCANTIK UI)
 # ==========================================
 st.markdown("""
 <style>
     /* Latar belakang utama aplikasi (Gradien Soft Blue-Gray) */
     .stApp {
-        background: linear-gradient(135deg, #f0f4f8 0%, #d7e1ec 100%);
+        background: linear-gradient(135deg, #f4f7f6 0%, #e0eaf5 100%);
     }
     
     /* Mempercantik Sidebar */
     [data-testid="stSidebar"] {
         background-color: #ffffff !important;
-        border-right: 1px solid #e0e0e0;
+        border-right: 1px solid #dce4ec;
     }
 
-    /* Kotak Metrik (Hasil, BMI, Akurasi) bergaya Card/Kartu */
+    /* Warna judul agar lebih elegan (Navy Blue) */
+    h1, h2, h3 {
+        color: #2c3e50 !important;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Mempercantik Tombol Utama (ANALISIS SEKARANG) */
+    button[kind="primary"] {
+        background-color: #1abc9c !important; /* Warna Teal Profesional */
+        color: white !important;
+        border-radius: 8px !important;
+        border: none !important;
+        padding: 10px 24px !important;
+        font-weight: bold !important;
+        box-shadow: 0px 4px 10px rgba(26, 188, 156, 0.4) !important;
+        transition: all 0.3s ease !important;
+    }
+    button[kind="primary"]:hover {
+        background-color: #16a085 !important; /* Teal lebih gelap saat di-hover */
+        box-shadow: 0px 6px 15px rgba(26, 188, 156, 0.6) !important;
+        transform: translateY(-2px);
+    }
+
+    /* Kotak Metrik (Hasil, BMI, Akurasi) bergaya Card 3D */
     [data-testid="stMetric"] {
         background-color: #ffffff;
         border-radius: 12px;
         padding: 15px 20px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.08);
-        border-left: 6px solid #2e86c1; /* Garis aksen biru */
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.06);
+        border-left: 6px solid #1abc9c; /* Garis aksen Teal */
     }
 
-    /* Memaksa kontras teks agar gelap dan mudah dibaca di latar terang */
-    html, body, [class*="css"] {
-        color: #1a252f;
-    }
-
-    /* Warna judul khusus agar lebih elegan */
-    h1, h2, h3 {
-        color: #2c3e50 !important;
-        font-family: 'Helvetica Neue', sans-serif;
+    /* Input Fields & Dropdowns (Shadow & Border Halus) */
+    .stTextInput>div>div>input, .stNumberInput>div>div>input, .stSelectbox>div>div>div {
+        border-radius: 8px;
+        border: 1px solid #ccd1d9;
+        box-shadow: inset 0px 2px 4px rgba(0,0,0,0.02);
     }
     
-    /* Warna Tabs (Tab Menu) */
-    .stTabs [data-baseweb="tab-list"] {
-        background-color: transparent;
-    }
-    .stTabs [data-baseweb="tab"] {
-        font-weight: bold;
+    /* Teks warna label slider agar tidak bentrok */
+    .stSlider [data-testid="stMarkdownContainer"] p {
+        color: #34495e !important;
+        font-weight: 500;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -95,19 +112,27 @@ except Exception as e:
 # 4. SIDEBAR & MENU NAVIGASI
 # ==========================================
 with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/2737/2737140.png", width=90)
+    # Ganti Ikon Bir dengan Ikon Kesehatan yang Elegan
+    st.image("https://cdn-icons-png.flaticon.com/512/2966/2966327.png", width=90)
     st.title("Menu / Nav")
     lang = st.radio("🌐 Pilih Bahasa / Language", ["Bahasa Indonesia", "English"])
     st.divider()
     
-    if lang == "Bahasa Indonesia":
-        st.subheader("💧 Target Air Harian")
-        bb_calc = st.number_input("Berat Badan Anda (kg)", 30, 200, 60)
-        st.info(f"Kebutuhan Hidrasi Minimum: **{bb_calc * 0.033:.2f} Liter/hari**")
-    else:
-        st.subheader("💧 Daily Water Target")
-        bb_calc = st.number_input("Your Weight (kg)", 30, 200, 60)
-        st.info(f"Minimum Hydration Need: **{bb_calc * 0.033:.2f} Liters/day**")
+    st.subheader("💧 Target Air Harian" if lang == "Bahasa Indonesia" else "💧 Daily Water Target")
+    lbl_bb = "Berat Badan Anda (kg)" if lang == "Bahasa Indonesia" else "Your Weight (kg)"
+    bb_calc = st.number_input(lbl_bb, 30, 200, 60)
+    
+    # KOTAK HIDRASI CUSTOM YANG LEBIH CANTIK
+    hidrasi_air = bb_calc * 0.033
+    lbl_hidrasi = "Kebutuhan Hidrasi Minimum" if lang == "Bahasa Indonesia" else "Minimum Hydration Need"
+    lbl_liter = "Liter/hari" if lang == "Bahasa Indonesia" else "Liters/day"
+    
+    st.markdown(f"""
+    <div style="background-color: #e8f4f8; padding: 15px; border-radius: 10px; border-left: 5px solid #3498db; box-shadow: 0px 4px 6px rgba(0,0,0,0.05);">
+        <p style="margin:0; color: #2980b9; font-size: 13px; font-weight: bold;">{lbl_hidrasi}</p>
+        <h3 style="margin: 5px 0 0 0; color: #2c3e50;">{hidrasi_air:.2f} <span style="font-size:14px; font-weight: normal;">{lbl_liter}</span></h3>
+    </div>
+    """, unsafe_allow_html=True)
         
     st.divider()
     st.caption("🏆 AI Project Kelompok 2 - Jamsix")
@@ -115,7 +140,6 @@ with st.sidebar:
 # ==========================================
 # 5. KAMUS BAHASA (DICTIONARY TERJEMAHAN)
 # ==========================================
-# Fungsi untuk menerjemahkan class (output model) ke bahasa yang dipilih
 def terjemahkan_hasil_ai(hasil_asli, bahasa):
     kamus_indo = {
         'Insufficient_Weight': 'KEKURANGAN BERAT BADAN',
@@ -124,7 +148,7 @@ def terjemahkan_hasil_ai(hasil_asli, bahasa):
         'Overweight_Level_II': 'KELEBIHAN BERAT BADAN (Tingkat II)',
         'Obesity_Type_I': 'OBESITAS (Tipe I)',
         'Obesity_Type_II': 'OBESITAS (Tipe II)',
-        'Obesity_Type_III': 'OBESITAS ekstrim (Tipe III)'
+        'Obesity_Type_III': 'OBESITAS EKSTRIM (Tipe III)'
     }
     kamus_inggris = {
         'Insufficient_Weight': 'INSUFFICIENT WEIGHT',
@@ -141,7 +165,6 @@ def terjemahkan_hasil_ai(hasil_asli, bahasa):
     else:
         return kamus_inggris.get(hasil_asli, hasil_asli.replace('_', ' ').upper())
 
-# Kamus UI Form
 if lang == "Bahasa Indonesia":
     ui = {
         "title": "🥗 Penasihat AI Obesitas",
@@ -229,7 +252,6 @@ with tab1:
             
         bmi = weight / (height**2)
         
-        # Mapping gender kembali ke format model (Female/Male)
         gender_to_model = "Female" if gender_input in ["Perempuan", "Female"] else "Male"
         gender_encoded = encoders['Gender'].transform([gender_to_model])[0]
         
@@ -244,17 +266,14 @@ with tab1:
         hasil_prediksi_asli = classes[prediction_idx]
         confidence_score = probabilities[prediction_idx] * 100
 
-        # === TRANSLASI HASIL AI KE BAHASA YANG DIPILIH ===
         hasil_terjemahan = terjemahkan_hasil_ai(hasil_prediksi_asli, lang)
 
-        # Simpan state untuk tab 2
         st.session_state['res_asli'] = hasil_prediksi_asli
         st.session_state['res_terjemahan'] = hasil_terjemahan
 
         st.markdown("---")
         st.subheader(ui["res_title"])
 
-        # Alert Box
         if "Obesity" in hasil_prediksi_asli:
             st.error(f"⚠️ **{ui['res_status']}: {hasil_terjemahan}**")
         elif "Overweight" in hasil_prediksi_asli or "Insufficient" in hasil_prediksi_asli:
@@ -265,7 +284,6 @@ with tab1:
 
         st.write("")
         
-        # Layout Metrik Berjejer 3 (Dengan CSS Custom agar berbentuk kartu)
         res_col1, res_col2, res_col3 = st.columns(3)
         with res_col1:
             st.metric(label=ui["lbl_diag"], value=hasil_terjemahan)
@@ -275,7 +293,6 @@ with tab1:
             st.metric(label=ui["lbl_conf"], value=f"{confidence_score:.2f}%")
         
         st.write("")
-        # Progress Bar visual untuk tingkat kepercayaan AI
         st.progress(int(confidence_score) / 100)
 
 # ==========================================
@@ -327,12 +344,10 @@ with tab3:
     st.subheader(ui["chart_title"])
     g1, g2 = st.columns(2)
     with g1:
-        # Chart 1
         pie_title = "Proporsi Kelas Obesitas" if lang == "Bahasa Indonesia" else "Obesity Class Proportions"
         fig1 = px.pie(df_raw, names='NObeyesdad', title=pie_title, hole=0.3, color_discrete_sequence=px.colors.sequential.Teal)
         st.plotly_chart(fig1, use_container_width=True)
     with g2:
-        # Chart 2
         hist_title = "Distribusi Usia Terhadap Status" if lang == "Bahasa Indonesia" else "Age Distribution by Status"
         fig2 = px.histogram(df_raw, x="Age", color="NObeyesdad", title=hist_title, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig2, use_container_width=True)

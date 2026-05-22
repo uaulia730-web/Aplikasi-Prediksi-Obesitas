@@ -1,4 +1,4 @@
-import streamlit as st  # <-- PASTIKAN DI SINI MENGGUNAKAN 'as st'
+import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
@@ -10,49 +10,16 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import VotingClassifier
 
 # ==========================================
-# 1. KONFIGURASI & STYLE CSS CUSTOM
+# 1. KONFIGURASI HALAMAN UTAMA
 # ==========================================
-st.set_page_config(page_title="Obesity AI Advisor", page_icon="🥗", layout="wide")
-
-st.markdown("""
-    <style>
-    /* Background Utama */
-    .stApp { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
-    
-    /* Sidebar Emerald Green */
-    [data-testid="stSidebar"] { background-color: #064e3b; color: white; border-right: 5px solid #d4af37; }
-    
-    /* Tab Styling */
-    .stTabs [data-baseweb="tab-list"] { gap: 10px; }
-    .stTabs [data-baseweb="tab"] {
-        height: 60px; background-color: white; border-radius: 15px 15px 0px 0px;
-        padding: 10px 30px; font-weight: bold; color: #064e3b; border: 1px solid #e0e0e0;
-    }
-    .stTabs [aria-selected="true"] { 
-        background: linear-gradient(90deg, #10b981, #059669) !important; 
-        color: white !important; box-shadow: 0 4px 15px rgba(16,185,129,0.4);
-    }
-
-    /* Card/Box Styling */
-    .card {
-        padding: 30px; border-radius: 25px; background-color: rgba(255, 255, 255, 0.9);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-bottom: 25px;
-        border-top: 10px solid #d4af37;
-    }
-    
-    /* Button Gold Premium */
-    .stButton>button {
-        width: 100%; border-radius: 50px; height: 4em;
-        background: linear-gradient(90deg, #d4af37, #b8860b);
-        color: white; font-weight: 800; font-size: 20px; border: none;
-        transition: 0.4s ease;
-    }
-    .stButton>button:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(212,175,55,0.5); }
-    </style>
-    """, unsafe_allowed_html=True)
+st.set_page_config(
+    page_title="Obesity AI Advisor", 
+    page_icon="🥗", 
+    layout="wide"
+)
 
 # ==========================================
-# 2. TRAINING ENGINE (MODEL ENSEMBLE TERBAIK)
+# 2. TRAINING ENGINE (MODEL ENSEMBLE)
 # ==========================================
 @st.cache_resource
 def build_model():
@@ -97,67 +64,70 @@ def build_model():
 try:
     model, encoders, feature_names, target_classes, df_raw = build_model()
 except Exception as e:
-    st.error("Gagal memuat data! Pastikan file Excel 'KEL.2 obesitas Projek MCL 2.xlsx' sudah diletakkan dalam folder yang sama.")
+    st.error("Gagal memuat data! Pastikan file Excel 'KEL.2 obesitas Projek MCL 2.xlsx' sudah diletakkan dalam folder yang sama di GitHub.")
     st.stop()
 
 # ==========================================
-# 3. SIDEBAR & BAHASA
+# 3. SIDEBAR & INTEGRASI UTAMA
 # ==========================================
 with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/2737/2737140.png", width=120)
-    st.title("Menu Utama")
+    st.image("https://cdn-icons-png.flaticon.com/512/2737/2737140.png", width=100)
+    st.title("Menu Navigasi")
     lang = st.radio("🌐 Pilih Bahasa / Language", ["Bahasa Indonesia", "English"])
     st.divider()
     
     st.subheader("💧 Target Air Harian")
-    bb_calc = st.number_input("Berat Badan (kg)", 30, 200, 60)
-    st.write(f"Kebutuhan Hidrasi: **{bb_calc * 0.033:.2f} Liter/hari**")
+    bb_calc = st.number_input("Berat Badan Anda (kg)", 30, 200, 60)
+    st.info(f"Kebutuhan Hidrasi Minimum: **{bb_calc * 0.033:.2f} Liter/hari**")
     
     st.divider()
-    st.info("AI Project Kelompok 2 - Ensemble Learning")
+    st.caption("AI Project Kelompok 2 - Ensemble Machine Learning")
 
-# Kamus Teks Multibahasa
-t = {
-    "header": "🥗 Obesity AI Advisor" if lang == "English" else "🥗 Penasihat AI Obesitas",
-    "sub": "Smart Health Diagnostic based on Ensemble Machine Learning (98.37% Accuracy)" if lang == "English" else "Diagnostik Kesehatan Cerdas berbasis Ensemble Machine Learning (Akurasi 98.37%)",
-    "tab1": "🎯 Prediksi AI", "tab2": "💡 Saran Ahli", "tab3": "📊 Statistik Data",
-    "btn": "🚀 ANALISIS SEKARANG"
-}
+# Kamus Teks Dinamis
+if lang == "English":
+    title_text = "🥗 Obesity AI Advisor"
+    sub_text = "Smart Health Diagnostic based on Ensemble Machine Learning (98.37% Accuracy)"
+    tab1_title, tab2_title, tab3_title = "🎯 AI Prediction", "💡 Expert Advice", "📊 Data Statistics"
+    btn_text = "🚀 RUN DIAGNOSTIC NOW"
+else:
+    title_text = "🥗 Penasihat AI Obesitas"
+    sub_text = "Diagnostik Kesehatan Cerdas Berbasis Ensemble Machine Learning (Akurasi 98.37%)"
+    tab1_title, tab2_title, tab3_title = "🎯 Prediksi AI", "💡 Saran Pakar", "📊 Statistik Data"
+    btn_text = "🚀 ANALISIS SEKARANG"
 
-# ==========================================
-# 4. TAMPILAN UTAMA
-# ==========================================
-st.markdown(f"<h1 style='text-align: center; color: #064e3b; font-size: 3.5em;'>{t['header']}</h1>", unsafe_allowed_html=True)
-st.markdown(f"<p style='text-align: center; color: #555; font-size: 1.2em;'>{t['sub']}</p>", unsafe_allowed_html=True)
+# Banner Utama Aplikasi
+st.title(title_text)
+st.praise = st.markdown(f"*{sub_text}*")
+st.divider()
 
-tab1, tab2, tab3 = st.tabs([t['tab1'], t['tab2'], t['tab3']])
+tab1, tab2, tab3 = st.tabs([tab1_title, tab2_title, tab3_title])
 
-# --- TAB 1: FORM INPUT VARIABEL SIGNIFIKAN ---
+# --- TAB 1: FORM INPUT UTAMA ---
 with tab1:
     col1, col2 = st.columns(2)
+    
     with col1:
-        st.markdown('<div class="card"><h3>👤 Profil Fisik (Signifikan)</h3>', unsafe_allowed_html=True)
+        st.subheader("👤 Profil Fisik")
         gender = st.selectbox("Jenis Kelamin / Gender", ["Female", "Male"])
         age = st.number_input("Usia / Age (Tahun)", 1, 100, 21)
-        height = st.number_input("Tinggi Badan / Height (m)", 1.0, 2.5, 1.65, step=0.01)
-        weight = st.number_input("Berat Badan / Weight (kg)", 10, 250, 60, step=0.5)
-        st.markdown('</div>', unsafe_allow_html=True)
+        height = st.number_input("Tinggi Badan / Height (Meter)", 1.0, 2.5, 1.65, step=0.01)
+        weight = st.number_input("Berat Badan / Weight (Kilogram)", 10.0, 250.0, 60.0, step=0.5)
 
     with col2:
-        st.markdown('<div class="card"><h3>🍏 Kebiasaan & Gaya Hidup (Signifikan)</h3>', unsafe_allowed_html=True)
-        fcvc = st.slider("Frekuensi Konsumsi Sayur / Vegetables (1: Jarang, 2: Kadang, 3: Selalu)", 1.0, 3.0, 2.0, step=1.0)
-        ch2o = st.slider("Konsumsi Air Minum / Water Intake (Liter per Hari)", 1.0, 3.0, 2.0, step=0.5)
-        faf = st.slider("Aktivitas Fisik harian / Physical Activity (0: Pasif, 3: Sangat Aktif)", 0.0, 3.0, 1.0, step=1.0)
-        tue = st.slider("Waktu Penggunaan Gadget / Screen Time (0: Rendah, 2: Tinggi)", 0.0, 2.0, 1.0, step=1.0)
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.subheader("🍏 Pola Gaya Hidup")
+        fcvc = st.slider("Frekuensi Makan Sayur (1: Jarang, 2: Kadang, 3: Selalu)", 1.0, 3.0, 2.0, step=1.0)
+        ch2o = st.slider("Konsumsi Air Minum Harian (Liter)", 1.0, 3.0, 2.0, step=0.5)
+        faf = st.slider("Aktivitas Fisik / Olahraga Mingguan (0: Pasif, 3: Sangat Aktif)", 0.0, 3.0, 1.0, step=1.0)
+        tue = st.slider("Waktu Penggunaan Layar Gadget (0: Sebentar, 2: Lama Semalaman)", 0.0, 2.0, 1.0, step=1.0)
 
-    if st.button(t["btn"]):
+    st.write("")
+    if st.button(btn_text, type="primary", use_container_width=True):
         bmi = weight / (height**2)
         
-        # Transformasi input teks Gender ke angka sesuai encoder
+        # Konversi kategori gender
         gender_encoded = encoders['Gender'].transform([gender])[0]
         
-        # Membuat Dataframe Masukan terstruktur sesuai struktur Fitur Signifikan model akhir
+        # DataFrame Input terstruktur
         input_data = pd.DataFrame([{
             'Weight': float(weight),
             'Height': float(height),
@@ -169,54 +139,50 @@ with tab1:
             'CH2O': float(ch2o)
         }], columns=feature_names)
 
-        # Proses Klasifikasi menggunakan Ensemble (Voting Classifier)
+        # Eksekusi Klasifikasi dengan Model Ensemble
         pred = model.predict(input_data)[0]
         final_res = target_classes[int(pred)].replace('_', ' ')
         
         st.session_state['res'] = final_res
         st.session_state['bmi'] = bmi
 
-        st.markdown("---")
-        res1, res2 = st.columns(2)
-        with res1:
-            st.metric("Hasil Diagnosis Berbasis Ensemble AI", final_res)
-        with res2:
-            st.metric("Skor BMI Kalkulasi", f"{bmi:.2f}")
+        st.success("🎉 Hasil Komputasi Diagnosis Selesai!")
+        
+        res_col1, res_col2 = st.columns(2)
+        with res_col1:
+            st.metric(label="Hasil Diagnosis Klasifikasi Gizi (Ensemble Model)", value=final_res)
+        with res_col2:
+            st.metric(label="Nilai Massa Indeks Tubuh (BMI)", value=f"{bmi:.2f}")
         st.balloons()
 
-# --- TAB 2: SARAN KLINIS ---
+# --- TAB 2: SARAN KESEHATAN MEDIS ---
 with tab2:
     if 'res' not in st.session_state:
-        st.info("Silakan lakukan prediksi terlebih dahulu di tab Prediksi.")
+        st.info("Silakan lakukan pengujian prediksi terlebih dahulu pada tab pertama.")
     else:
-        st.markdown(f"### 💡 Rekomendasi Kesehatan Untuk Risiko: **{st.session_state['res']}**")
-        c_s1, c_s2 = st.columns(2)
-        with c_s1:
-            st.markdown('<div class="card"><h4>🥗 Intervensi Pola Makan</h4>', unsafe_allowed_html=True)
+        st.subheader(f"📋 Lembar Rekomendasi Medis untuk Status: {st.session_state['res']}")
+        
+        c1, c2 = st.columns(2)
+        with c1:
+            st.subheader("🥗 Panduan Pola Konsumsi")
             if "Obesity" in st.session_state['res']:
-                st.write("- Batasi asupan kalori pekat dan prioritaskan makanan dengan densitas energi rendah.")
-                st.write("- Pertahankan konsumsi serat alami harian (sayuran dan buah-buahan).")
+                st.write("- Pangkas konsumsi karbohidrat sederhana berindeks glikemik tinggi.")
+                st.write("- Optimalkan konsumsi serat sayuran harian Anda.")
             else:
-                st.write("- Pertahankan pemenuhan gizi seimbang makronutrien harian Anda.")
-            st.markdown('</div>', unsafe_allow_html=True)
-        with c_s2:
-            st.markdown('<div class="card"><h4>🚴 Regulasi Aktivitas Fisik</h4>', unsafe_allowed_html=True)
+                st.write("- Diet Anda berada pada jalur seimbang, pertahankan porsi gizi saat ini.")
+        with c2:
+            st.subheader("🚴 Panduan Aktivitas Fisik")
             steps = 7000 if "Obesity" in st.session_state['res'] else 10000
-            st.write(f"- Target aktivitas kardio terukur: Minimal **{steps} Langkah per hari**.")
-            st.write("- Batasi perilaku sedentari dan kurangi durasi penggunaan gawai (*screen time*) non-produktif.")
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.write(f"- Tingkatkan aktivitas pembakaran kalori harian minimal: **{steps} Langkah**.")
+            st.write("- Kendalikan durasi diam (*sedentary behavior*) di depan komputer atau layar telepon.")
 
-# --- TAB 3: VISUALISASI DATASET ---
+# --- TAB 3: VISUALISASI HISTOGRAM DATASET ---
 with tab3:
-    st.subheader("📊 Analisis Visual Distribusi Dataset Asli")
-    col_g1, col_g2 = st.columns(2)
-    with col_g1:
-        fig1 = px.pie(df_raw, names='NObeyesdad', title="Distribusi Kategori Tingkat Gizi pada Dataset", hole=0.4)
+    st.subheader("📊 Statistik Representatif Grafik Dataset")
+    g1, g2 = st.columns(2)
+    with g1:
+        fig1 = px.pie(df_raw, names='NObeyesdad', title="Proporsi Kelas Kasus Obesitas", hole=0.3)
         st.plotly_chart(fig1, use_container_width=True)
-    with col_g2:
-        fig2 = px.histogram(df_raw, x="Age", color="NObeyesdad", title="Korelasi Komposisi Usia Terhadap Kategori Risiko")
+    with g2:
+        fig2 = px.histogram(df_raw, x="Age", color="NObeyesdad", title="Distribusi Demografi Usia Terhadap Status Gizi")
         st.plotly_chart(fig2, use_container_width=True)
-    
-    st.divider()
-    st.markdown("#### Bagan Referensi Klasifikasi BMI Internasional")
-    st.image("https://cdn.pixabay.com/photo/2020/05/18/18/14/bmi-5187843_1280.png", width=700)

@@ -15,7 +15,53 @@ st.set_page_config(
 )
 
 # ==========================================
-# 2. PROSES LOADING INSTAN
+# 2. INJEKSI CUSTOM CSS (MEMPERCANTIK UI & KONTRAS WAA)
+# ==========================================
+st.markdown("""
+<style>
+    /* Latar belakang utama aplikasi (Gradien Soft Blue-Gray) */
+    .stApp {
+        background: linear-gradient(135deg, #f0f4f8 0%, #d7e1ec 100%);
+    }
+    
+    /* Mempercantik Sidebar */
+    [data-testid="stSidebar"] {
+        background-color: #ffffff !important;
+        border-right: 1px solid #e0e0e0;
+    }
+
+    /* Kotak Metrik (Hasil, BMI, Akurasi) bergaya Card/Kartu */
+    [data-testid="stMetric"] {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 15px 20px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.08);
+        border-left: 6px solid #2e86c1; /* Garis aksen biru */
+    }
+
+    /* Memaksa kontras teks agar gelap dan mudah dibaca di latar terang */
+    html, body, [class*="css"] {
+        color: #1a252f;
+    }
+
+    /* Warna judul khusus agar lebih elegan */
+    h1, h2, h3 {
+        color: #2c3e50 !important;
+        font-family: 'Helvetica Neue', sans-serif;
+    }
+    
+    /* Warna Tabs (Tab Menu) */
+    .stTabs [data-baseweb="tab-list"] {
+        background-color: transparent;
+    }
+    .stTabs [data-baseweb="tab"] {
+        font-weight: bold;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# ==========================================
+# 3. PROSES LOADING INSTAN
 # ==========================================
 @st.cache_resource
 def load_fast_model():
@@ -46,7 +92,7 @@ except Exception as e:
     st.stop()
 
 # ==========================================
-# 3. SIDEBAR & MENU NAVIGASI (DENGAN LOKALISASI BAHASA)
+# 4. SIDEBAR & MENU NAVIGASI
 # ==========================================
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/2737/2737140.png", width=90)
@@ -67,8 +113,35 @@ with st.sidebar:
     st.caption("🏆 AI Project Kelompok 2 - Jamsix")
 
 # ==========================================
-# 4. KAMUS BAHASA (DICTIONARY) UNTUK UI
+# 5. KAMUS BAHASA (DICTIONARY TERJEMAHAN)
 # ==========================================
+# Fungsi untuk menerjemahkan class (output model) ke bahasa yang dipilih
+def terjemahkan_hasil_ai(hasil_asli, bahasa):
+    kamus_indo = {
+        'Insufficient_Weight': 'KEKURANGAN BERAT BADAN',
+        'Normal_Weight': 'BERAT BADAN NORMAL',
+        'Overweight_Level_I': 'KELEBIHAN BERAT BADAN (Tingkat I)',
+        'Overweight_Level_II': 'KELEBIHAN BERAT BADAN (Tingkat II)',
+        'Obesity_Type_I': 'OBESITAS (Tipe I)',
+        'Obesity_Type_II': 'OBESITAS (Tipe II)',
+        'Obesity_Type_III': 'OBESITAS ekstrim (Tipe III)'
+    }
+    kamus_inggris = {
+        'Insufficient_Weight': 'INSUFFICIENT WEIGHT',
+        'Normal_Weight': 'NORMAL WEIGHT',
+        'Overweight_Level_I': 'OVERWEIGHT (Level I)',
+        'Overweight_Level_II': 'OVERWEIGHT (Level II)',
+        'Obesity_Type_I': 'OBESITY (Type I)',
+        'Obesity_Type_II': 'OBESITY (Type II)',
+        'Obesity_Type_III': 'EXTREME OBESITY (Type III)'
+    }
+    
+    if bahasa == "Bahasa Indonesia":
+        return kamus_indo.get(hasil_asli, hasil_asli.replace('_', ' ').upper())
+    else:
+        return kamus_inggris.get(hasil_asli, hasil_asli.replace('_', ' ').upper())
+
+# Kamus UI Form
 if lang == "Bahasa Indonesia":
     ui = {
         "title": "🥗 Penasihat AI Obesitas",
@@ -86,10 +159,10 @@ if lang == "Bahasa Indonesia":
         "load2": "🎯 Menghitung kecenderungan metabolisme...",
         "load3": "✅ Diagnosis Komputasi Selesai!",
         "res_title": "📊 Hasil Analisis Medis",
-        "res_status": "STATUS",
-        "lbl_diag": "Hasil Diagnosis Akhir", "lbl_bmi": "Nilai BMI", "lbl_conf": "Tingkat Keyakinan (Akurasi)",
+        "res_status": "STATUS KESEHATAN",
+        "lbl_diag": "Hasil Diagnosis Akhir", "lbl_bmi": "Nilai BMI", "lbl_conf": "Tingkat Keyakinan AI",
         "tab2_warn": "👈 Silakan lakukan analisis pada tab pertama terlebih dahulu.",
-        "tab2_title": "📋 Rekomendasi Medis untuk:",
+        "tab2_title": "📋 Rekomendasi Medis untuk Status:",
         "food_title": "🥗 Panduan Pola Konsumsi",
         "sport_title": "🚴 Panduan Aktivitas Fisik",
         "chart_title": "📊 Statistik Representatif Grafik Dataset"
@@ -111,7 +184,7 @@ else:
         "load2": "🎯 Calculating metabolic tendencies...",
         "load3": "✅ Computational Diagnosis Complete!",
         "res_title": "📊 Medical Analysis Result",
-        "res_status": "STATUS",
+        "res_status": "HEALTH STATUS",
         "lbl_diag": "Final Diagnosis", "lbl_bmi": "BMI Value", "lbl_conf": "AI Confidence Level",
         "tab2_warn": "👈 Please run the analysis on the first tab first.",
         "tab2_title": "📋 Medical Recommendations for:",
@@ -121,7 +194,7 @@ else:
     }
 
 st.title(ui["title"])
-st.markdown(f"*{ui['subtitle']}*")
+st.markdown(f"**{ui['subtitle']}**")
 st.divider()
 
 tab1, tab2, tab3 = st.tabs(ui["tabs"])
@@ -168,60 +241,62 @@ with tab1:
 
         probabilities = model.predict_proba(input_data)[0]
         prediction_idx = np.argmax(probabilities)
-        hasil_prediksi = classes[prediction_idx]
+        hasil_prediksi_asli = classes[prediction_idx]
         confidence_score = probabilities[prediction_idx] * 100
 
-        st.session_state['res'] = hasil_prediksi
-        st.session_state['bmi'] = bmi
-        st.session_state['conf'] = confidence_score
+        # === TRANSLASI HASIL AI KE BAHASA YANG DIPILIH ===
+        hasil_terjemahan = terjemahkan_hasil_ai(hasil_prediksi_asli, lang)
 
-        # TAMPILAN HASIL SEJAJAR (DI SAMPING)
+        # Simpan state untuk tab 2
+        st.session_state['res_asli'] = hasil_prediksi_asli
+        st.session_state['res_terjemahan'] = hasil_terjemahan
+
         st.markdown("---")
         st.subheader(ui["res_title"])
 
-        kategori_format = hasil_prediksi.replace('_', ' ').upper()
+        # Alert Box
+        if "Obesity" in hasil_prediksi_asli:
+            st.error(f"⚠️ **{ui['res_status']}: {hasil_terjemahan}**")
+        elif "Overweight" in hasil_prediksi_asli or "Insufficient" in hasil_prediksi_asli:
+            st.warning(f"⚠️ **{ui['res_status']}: {hasil_terjemahan}**")
+        else:
+            st.success(f"✅ **{ui['res_status']}: {hasil_terjemahan}**")
+            st.balloons()
 
-        # Layout 3 Kolom Bersebelahan
+        st.write("")
+        
+        # Layout Metrik Berjejer 3 (Dengan CSS Custom agar berbentuk kartu)
         res_col1, res_col2, res_col3 = st.columns(3)
         with res_col1:
-            st.metric(label=ui["lbl_diag"], value=kategori_format)
+            st.metric(label=ui["lbl_diag"], value=hasil_terjemahan)
         with res_col2:
             st.metric(label=ui["lbl_bmi"], value=f"{bmi:.2f}")
         with res_col3:
             st.metric(label=ui["lbl_conf"], value=f"{confidence_score:.2f}%")
         
+        st.write("")
         # Progress Bar visual untuk tingkat kepercayaan AI
         st.progress(int(confidence_score) / 100)
-
-        # Alert Box
-        if "Obesity" in hasil_prediksi:
-            st.error(f"⚠️ **{ui['res_status']}: {kategori_format}**")
-        elif "Overweight" in hasil_prediksi:
-            st.warning(f"⚠️ **{ui['res_status']}: {kategori_format}**")
-        else:
-            st.success(f"✅ **{ui['res_status']}: {kategori_format}**")
-            st.balloons()
 
 # ==========================================
 # TAB 2: SARAN KESEHATAN MEDIS
 # ==========================================
 with tab2:
-    if 'res' not in st.session_state:
+    if 'res_terjemahan' not in st.session_state:
         st.info(ui["tab2_warn"])
     else:
-        status_sekarang = st.session_state['res'].replace('_', ' ').upper()
-        st.subheader(f"{ui['tab2_title']} {status_sekarang}")
+        st.subheader(f"{ui['tab2_title']} {st.session_state['res_terjemahan']}")
         st.divider()
         
         c1, c2 = st.columns(2)
         with c1:
             st.subheader(ui["food_title"])
-            if "Obesity" in st.session_state['res']:
+            if "Obesity" in st.session_state['res_asli']:
                 if lang == "Bahasa Indonesia":
                     st.error("- Pangkas konsumsi karbohidrat berindeks glikemik tinggi.\n- Defisit kalori bertahap sangat disarankan.\n- Hindari makan berat 3 jam sebelum tidur.")
                 else:
                     st.error("- Cut down on high glycemic index carbohydrates.\n- Gradual caloric deficit is highly recommended.\n- Avoid heavy meals 3 hours before sleep.")
-            elif "Overweight" in st.session_state['res']:
+            elif "Overweight" in st.session_state['res_asli']:
                 if lang == "Bahasa Indonesia":
                     st.warning("- Kurangi porsi makanan manis dan gorengan.\n- Perbanyak porsi protein tanpa lemak.")
                 else:
@@ -234,7 +309,7 @@ with tab2:
         
         with c2:
             st.subheader(ui["sport_title"])
-            if "Obesity" in st.session_state['res'] or "Overweight" in st.session_state['res']:
+            if "Obesity" in st.session_state['res_asli'] or "Overweight" in st.session_state['res_asli']:
                 if lang == "Bahasa Indonesia":
                     st.error("- Mulai dengan olahraga *low-impact* (jalan cepat/berenang).\n- Targetkan minimal **7000 Langkah/hari**.\n- Kurangi duduk terlalu lama.")
                 else:
@@ -254,10 +329,10 @@ with tab3:
     with g1:
         # Chart 1
         pie_title = "Proporsi Kelas Obesitas" if lang == "Bahasa Indonesia" else "Obesity Class Proportions"
-        fig1 = px.pie(df_raw, names='NObeyesdad', title=pie_title, hole=0.3, color_discrete_sequence=px.colors.sequential.RdBu)
+        fig1 = px.pie(df_raw, names='NObeyesdad', title=pie_title, hole=0.3, color_discrete_sequence=px.colors.sequential.Teal)
         st.plotly_chart(fig1, use_container_width=True)
     with g2:
         # Chart 2
         hist_title = "Distribusi Usia Terhadap Status" if lang == "Bahasa Indonesia" else "Age Distribution by Status"
-        fig2 = px.histogram(df_raw, x="Age", color="NObeyesdad", title=hist_title)
+        fig2 = px.histogram(df_raw, x="Age", color="NObeyesdad", title=hist_title, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig2, use_container_width=True)

@@ -21,30 +21,21 @@ st.set_page_config(
 # ==========================================
 st.markdown("""
 <style>
-    /* Mengimpor Font Poppins */
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
     html, body, [class*="css"] { font-family: 'Poppins', sans-serif !important; }
 
-    /* Latar Belakang Utama yang Bersih (Off-White) */
     .stApp { background-color: #f8fafc !important; }
 
-    /* ==============================================
-       SIDEBAR MENU (CERAH, KONTRAST TINGGI & ELEGAN)
-       ============================================== */
     [data-testid="stSidebar"] {
         background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%) !important;
         box-shadow: 4px 0px 15px rgba(0,0,0,0.05) !important;
         border-right: 2px solid #7dd3fc !important;
     }
-    /* Memastikan teks di sidebar berwarna gelap agar terbaca jelas */
     [data-testid="stSidebar"] p, [data-testid="stSidebar"] span, [data-testid="stSidebar"] label {
         color: #0f172a !important;
         font-weight: 600 !important;
     }
     
-    /* ==============================================
-       HEADER BANNER APLIKASI
-       ============================================== */
     .header-banner {
         background: linear-gradient(135deg, #1A2980 0%, #26D0CE 100%);
         padding: 40px 20px;
@@ -67,9 +58,6 @@ st.markdown("""
         margin-top: 12px;
     }
 
-    /* ==============================================
-       STYLING TAB (KAPSUL 3D)
-       ============================================== */
     .stTabs [data-baseweb="tab-list"] {
         background-color: #f1f5f9 !important; 
         border-radius: 15px !important;
@@ -90,7 +78,6 @@ st.markdown("""
         font-weight: 700 !important;
         font-size: 16px !important;
     }
-    /* Warna saat tab aktif */
     .stTabs [aria-selected="true"] {
         background: linear-gradient(90deg, #1A2980 0%, #26D0CE 100%) !important;
         border: 2px solid #1A2980 !important;
@@ -101,9 +88,6 @@ st.markdown("""
         font-weight: 800 !important;
     }
 
-    /* ==============================================
-       KOTAK INPUT (PUTIH BERSIH)
-       ============================================== */
     .stNumberInput, .stSelectbox, .stSlider {
         background-color: #ffffff !important; 
         padding: 20px !important;
@@ -118,9 +102,6 @@ st.markdown("""
         font-weight: 700 !important;
     }
 
-    /* ==============================================
-       TOMBOL UTAMA & ALERT
-       ============================================== */
     button[kind="primary"] {
         background: linear-gradient(90deg, #1A2980 0%, #26D0CE 100%) !important;
         color: white !important;
@@ -137,7 +118,6 @@ st.markdown("""
         box-shadow: 0px 12px 25px rgba(38, 208, 206, 0.6) !important;
     }
     
-    /* Animasi Tampilan Awal (Welcome Screen) */
     .welcome-container {
         display: flex;
         justify-content: center;
@@ -159,7 +139,6 @@ st.markdown("""
 # ==========================================
 # 3. TAMPILAN AWAL (WELCOME SCREEN)
 # ==========================================
-# Menyambut pengguna baru dengan elegan sebelum masuk ke aplikasi utama
 if 'welcomed' not in st.session_state:
     st.session_state['welcomed'] = False
 
@@ -182,7 +161,7 @@ if not st.session_state['welcomed']:
         if st.button("🚀 Mulai Analisis Kesehatan Anda Sekarang", type="primary", use_container_width=True):
             st.session_state['welcomed'] = True
             st.rerun()
-    st.stop() # Hentikan eksekusi sisa web sampai tombol ditekan
+    st.stop() 
 
 # ==========================================
 # 4. FUNGSI LOADING DATA & CACHING
@@ -209,7 +188,7 @@ except Exception as e:
     st.stop() 
 
 # ==========================================
-# 5. SIDEBAR MENU (CERAH & FITUR BARU)
+# 5. SIDEBAR MENU
 # ==========================================
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/2966/2966327.png", width=80)
@@ -218,12 +197,11 @@ with st.sidebar:
     lang = st.radio("Pilih Bahasa / Language", ["Bahasa Indonesia", "English"])
     st.divider()
     
-    # --- FITUR BARU: PELACAK HIDRASI (WATER TRACKER) ---
     st.markdown("### 💧 Pelacak Hidrasi Harian" if lang == "Bahasa Indonesia" else "### 💧 Daily Water Tracker")
     lbl_bb = "Berat Badan Anda (kg)" if lang == "Bahasa Indonesia" else "Your Weight (kg)"
     bb_calc = st.number_input(lbl_bb, 30, 200, 60, key="water_calc")
     
-    hidrasi_air = bb_calc * 0.033 # Target air minimum harian
+    hidrasi_air = bb_calc * 0.033 
     
     st.markdown(f"""
     <div style="background: #ffffff; padding: 15px; border-radius: 12px; border: 2px solid #0ea5e9; box-shadow: 0px 4px 10px rgba(14, 165, 233, 0.2); text-align: center; margin-bottom: 20px;">
@@ -232,11 +210,9 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-    # Input interaktif untuk jumlah yang sudah diminum
     lbl_minum = "Sudah minum berapa banyak hari ini? (Liter)" if lang == "Bahasa Indonesia" else "How much have you drank today? (Liters)"
     air_diminum = st.slider(lbl_minum, 0.0, 5.0, 0.0, step=0.1)
     
-    # Kalkulasi Persentase Progress Bar
     persentase_hidrasi = min(air_diminum / hidrasi_air, 1.0)
     st.progress(persentase_hidrasi)
     
@@ -282,7 +258,7 @@ if lang == "Bahasa Indonesia":
         "res_title": "📊 Hasil Analisis Medis", "res_status": "STATUS",
         "lbl_diag": "Hasil Diagnosis", "lbl_bmi": "Nilai BMI", "lbl_conf": "Akurasi AI",
         "tab2_title": "📋 Rekomendasi Medis untuk Status:",
-        "alert_saran": "💡 <b>Langkah Selanjutnya:</b> Klik tab <b>Saran Pakar</b> di bagian atas untuk melihat panduan gizi dan rekomendasi olahraga khusus untuk Anda!"
+        "alert_saran": "💡 <b>Langkah Selanjutnya:</b> Klik tab <b>Saran Pakar</b> di bagian atas untuk melihat panduan gizi dan rekomendasi kesehatan khusus untuk Anda!"
     }
 else:
     ui = {
@@ -296,7 +272,7 @@ else:
         "res_title": "📊 Medical Analysis Result", "res_status": "STATUS",
         "lbl_diag": "Diagnosis", "lbl_bmi": "BMI Value", "lbl_conf": "AI Accuracy",
         "tab2_title": "📋 Medical Recommendations for:",
-        "alert_saran": "💡 <b>Next Step:</b> Click the <b>Expert Advice</b> tab above to view custom nutrition guides and exercise recommendations!"
+        "alert_saran": "💡 <b>Next Step:</b> Click the <b>Expert Advice</b> tab above to view custom nutrition guides and health recommendations!"
     }
 
 tab1, tab2, tab3 = st.tabs(ui["tabs"])
@@ -389,7 +365,6 @@ with tab1:
         fig_gauge.update_layout(height=300, margin=dict(l=20, r=20, t=20, b=20))
         st.plotly_chart(fig_gauge, use_container_width=True)
 
-        # ---> PERINTAH MENCOLOK MENUJU TAB SARAN PAKAR <---
         st.markdown(f"""
         <div style="background: linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%); padding: 18px 25px; border-radius: 15px; margin-top: 20px; margin-bottom: 25px; box-shadow: 0px 8px 20px rgba(255, 75, 43, 0.4); text-align: center; border: 2px solid white;">
             <p style="color: white !important; font-size: 1.1rem; margin: 0; font-weight: 500;">{ui['alert_saran']}</p>
@@ -416,7 +391,7 @@ Untuk rekomendasi diet, ikuti arahan dari tenaga medis profesional.
         )
 
 # ==========================================
-# TAB 2: SARAN KESEHATAN MEDIS & TAUTAN
+# TAB 2: SARAN KESEHATAN MEDIS & TAUTAN (DENGAN 7 KATEGORI)
 # ==========================================
 with tab2:
     if 'res_terjemahan' not in st.session_state:
@@ -445,18 +420,50 @@ with tab2:
         st.write("")
         st.markdown("### 🔗 Referensi Medis Khusus Untuk Anda")
         
-        if "Insufficient" in st.session_state['res_asli']:
-            link_url = "https://www.siloamhospitals.com/informasi-siloam/artikel/cara-menambah-berat-badan" if lang == "Bahasa Indonesia" else "https://www.mayoclinic.org/healthy-lifestyle/nutrition-and-healthy-eating/expert-answers/underweight/faq-20058429"
-            link_text = "📖 Panduan Sehat Menaikkan Berat Badan"
+        # --- LOGIKA 7 KATEGORI LINK MEDIS ---
+        kategori = st.session_state['res_asli']
+        
+        # 1. Kurus (Insufficient Weight)
+        if kategori == 'Insufficient_Weight':
+            link_url = "https://www.siloamhospitals.com/informasi-siloam/artikel/cara-menambah-berat-badan" if lang == "Bahasa Indonesia" else "https://www.healthline.com/nutrition/how-to-gain-weight"
+            link_text = "📖 Cara Sehat Menambah Berat Badan & Massa Otot" if lang == "Bahasa Indonesia" else "📖 Healthy Ways to Gain Weight"
             bg_color = "linear-gradient(135deg, #f6d365, #fda085)" 
-        elif "Normal" in st.session_state['res_asli']:
+            
+        # 2. Normal (Normal Weight)
+        elif kategori == 'Normal_Weight':
             link_url = "https://www.siloamhospitals.com/informasi-siloam/artikel/pola-hidup-sehat" if lang == "Bahasa Indonesia" else "https://www.who.int/news-room/fact-sheets/detail/healthy-diet"
-            link_text = "📖 Tips Mempertahankan Gaya Hidup Sehat"
+            link_text = "📖 Panduan Mempertahankan Pola Hidup Sehat" if lang == "Bahasa Indonesia" else "📖 Guide to Maintaining a Healthy Diet"
             bg_color = "linear-gradient(135deg, #11998e, #38ef7d)" 
-        else: 
-            link_url = "https://www.siloamhospitals.com/informasi-siloam/artikel/cara-diet-sehat-dan-cepat" if lang == "Bahasa Indonesia" else "https://www.mayoclinic.org/healthy-lifestyle/weight-loss/in-depth/weight-loss/art-20047752"
-            link_text = "📖 Panduan Diet Defisit Kalori & Turun BB"
+            
+        # 3. Overweight Tingkat 1
+        elif kategori == 'Overweight_Level_I':
+            link_url = "https://www.halodoc.com/artikel/ini-cara-diet-sehat-untuk-menurunkan-berat-badan" if lang == "Bahasa Indonesia" else "https://www.mayoclinic.org/healthy-lifestyle/weight-loss/in-depth/weight-loss/art-20047752"
+            link_text = "📖 Panduan Defisit Kalori Pemula (Turun BB Ringan)" if lang == "Bahasa Indonesia" else "📖 Basic Calorie Deficit & Weight Loss Guide"
+            bg_color = "linear-gradient(135deg, #f2994a, #f2c94c)" 
+
+        # 4. Overweight Tingkat 2
+        elif kategori == 'Overweight_Level_II':
+            link_url = "https://www.alodokter.com/diet-sehat-untuk-menurunkan-berat-badan" if lang == "Bahasa Indonesia" else "https://www.healthline.com/nutrition/how-to-lose-weight-as-fast-as-possible"
+            link_text = "📖 Strategi Efektif Penurunan Berat Badan (Diet Sehat)" if lang == "Bahasa Indonesia" else "📖 Effective Weight Loss Strategies"
             bg_color = "linear-gradient(135deg, #FF416C, #FF4B2B)" 
+
+        # 5. Obesitas Tipe 1
+        elif kategori == 'Obesity_Type_I':
+            link_url = "https://www.siloamhospitals.com/informasi-siloam/artikel/apa-itu-obesitas" if lang == "Bahasa Indonesia" else "https://www.mayoclinic.org/diseases-conditions/obesity/diagnosis-treatment/drc-20375749"
+            link_text = "📖 Pemahaman Bahaya Obesitas & Penanganan Dasar" if lang == "Bahasa Indonesia" else "📖 Obesity Management and Diagnosis"
+            bg_color = "linear-gradient(135deg, #e52d27, #b31217)" 
+
+        # 6. Obesitas Tipe 2
+        elif kategori == 'Obesity_Type_II':
+            link_url = "https://www.alodokter.com/obesitas" if lang == "Bahasa Indonesia" else "https://www.clevelandclinic.org/health/diseases/11209-weight-control-and-obesity"
+            link_text = "📖 Penanganan Medis Obesitas Lanjut & Olahraga Khusus" if lang == "Bahasa Indonesia" else "📖 Advanced Weight Control and Obesity Care"
+            bg_color = "linear-gradient(135deg, #cb2d3e, #ef473a)" 
+
+        # 7. Obesitas Tipe 3 (Ekstrim)
+        else: 
+            link_url = "https://www.halodoc.com/artikel/obesitas-morbid-ketahui-penyebab-dan-cara-mengatasinya" if lang == "Bahasa Indonesia" else "https://www.healthline.com/health/morbid-obesity"
+            link_text = "📖 Panduan Penanganan Medis Obesitas Ekstrim/Morbid" if lang == "Bahasa Indonesia" else "📖 Guide to Medical Intervention for Morbid Obesity"
+            bg_color = "linear-gradient(135deg, #870000, #190a05)" 
             
         st.markdown(f"""
         <a href="{link_url}" target="_blank" style="text-decoration: none;">

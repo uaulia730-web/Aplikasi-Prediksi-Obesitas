@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # ==========================================
-# 2. INJEKSI CUSTOM CSS (ANIMASI GRADASI & HIGH CONTRAST)
+# 2. INJEKSI CUSTOM CSS (ANIMASI & WARNA BARU)
 # ==========================================
 st.markdown("""
 <style>
@@ -32,9 +32,10 @@ st.markdown("""
         animation: gradientAnimation 12s ease infinite; 
     }
     
-    /* MEMPERCANTIK SIDEBAR DENGAN KONTRAST TINGGI */
+    /* MEMPERCANTIK SIDEBAR DENGAN GRADASI LEMBUT */
     [data-testid="stSidebar"] {
-        background-color: #ffffff !important;
+        /* Gradasi putih ke biru pastel agar tidak plain/membosankan */
+        background: linear-gradient(180deg, #ffffff 0%, #f0f4ff 100%) !important;
         box-shadow: 4px 0px 15px rgba(0, 0, 0, 0.05); 
         border-right: none;
     }
@@ -93,6 +94,12 @@ st.markdown("""
         box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
         border-left: 8px solid #1fa2ff; 
     }
+
+    /* Hover effect untuk link referensi */
+    .link-box:hover {
+        transform: translateY(-3px);
+        box-shadow: 0px 8px 15px rgba(0,0,0,0.15) !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -145,7 +152,7 @@ with st.sidebar:
     lbl_liter = "Liter/hari" if lang == "Bahasa Indonesia" else "Liters/day"
     
     st.markdown(f"""
-    <div style="background: #f8f9fa; padding: 15px; border-radius: 12px; border: 2px solid #3498db; box-shadow: 0px 4px 6px rgba(0,0,0,0.05);">
+    <div style="background: rgba(255, 255, 255, 0.9); padding: 15px; border-radius: 12px; border: 2px solid #3498db; box-shadow: 0px 4px 6px rgba(0,0,0,0.05);">
         <p style="margin:0; color: #7f8c8d; font-size: 13px; font-weight: bold;">{lbl_hidrasi}</p>
         <h2 style="margin: 5px 0 0 0; color: #2980b9;">{hidrasi_air:.2f} <span style="font-size:14px; font-weight: normal;">{lbl_liter}</span></h2>
     </div>
@@ -192,7 +199,7 @@ if lang == "Bahasa Indonesia":
         "food_title": "🥗 Panduan Pola Konsumsi",
         "sport_title": "🚴 Panduan Aktivitas Fisik",
         "chart_title": "📊 Statistik Representatif Grafik Dataset",
-        "goto_expert": "💡 **Untuk panduan gizi dan aktivitas fisik, silakan buka tab 'Saran Pakar' di atas.**"
+        "goto_expert": "💡 **Untuk panduan gizi dan aktivitas fisik lengkap, silakan buka tab 'Saran Pakar' di atas.**"
     }
 else:
     ui = {
@@ -218,7 +225,7 @@ else:
         "food_title": "🥗 Diet & Nutrition Guide",
         "sport_title": "🚴 Physical Activity Guide",
         "chart_title": "📊 Dataset Statistics Representation",
-        "goto_expert": "💡 **For nutrition guides and physical activity advice, please open the 'Expert Advice' tab above.**"
+        "goto_expert": "💡 **For complete nutrition and physical activity guides, please open the 'Expert Advice' tab above.**"
     }
 
 st.title(ui["title"])
@@ -301,12 +308,11 @@ with tab1:
         st.write("")
         st.progress(int(confidence_score) / 100)
         
-        # --- PEMBERITAHUAN UNTUK MELIHAT TAB SARAN PAKAR DITAMBAHKAN DI SINI ---
         st.write("")
         st.info(ui["goto_expert"])
 
 # ==========================================
-# TAB 2: SARAN KESEHATAN MEDIS
+# TAB 2: SARAN KESEHATAN MEDIS & TAUTAN EKSTERNAL
 # ==========================================
 with tab2:
     if 'res_terjemahan' not in st.session_state:
@@ -346,6 +352,42 @@ with tab2:
                     st.success("- Kombinasi latihan kardio dan beban 3-4 kali seminggu.\n- Target **10.000 Langkah/hari**.")
                 else:
                     st.success("- Combine cardio and strength training 3-4 times a week.\n- Target **10.000 steps/day**.")
+
+        # --- FITUR BARU: TAUTAN DINAMIS BERDASARKAN DIAGNOSIS ---
+        st.write("")
+        st.write("")
+        st.markdown("### 🔗 Tautan Referensi Medis Khusus Untuk Anda" if lang == "Bahasa Indonesia" else "### 🔗 Specialized Medical References For You")
+        
+        # Logika Kondisi Link
+        if "Insufficient" in st.session_state['res_asli']:
+            # Kurus -> Link Menaikkan BB
+            link_url = "https://www.alodokter.com/menambah-berat-badan-menjadi-ideal" if lang == "Bahasa Indonesia" else "https://www.healthline.com/nutrition/how-to-gain-weight"
+            link_text = "📖 Baca Panduan Sehat Menaikkan Berat Badan" if lang == "Bahasa Indonesia" else "📖 Read Guide on How to Gain Weight Safely"
+            bg_color = "linear-gradient(to right, #f6d365 0%, #fda085 100%)" # Gradasi Oranye Terang
+            text_color = "#fff"
+            
+        elif "Normal" in st.session_state['res_asli']:
+            # Normal -> Link Menjaga Kesehatan
+            link_url = "https://www.halodoc.com/kesehatan/hidup-sehat" if lang == "Bahasa Indonesia" else "https://www.who.int/philippines/news/feature-stories/detail/20-health-tips-for-2020"
+            link_text = "📖 Tips Mempertahankan Gaya Hidup Sehat" if lang == "Bahasa Indonesia" else "📖 Tips for Maintaining a Healthy Lifestyle"
+            bg_color = "linear-gradient(to right, #84fab0 0%, #8fd3f4 100%)" # Gradasi Hijau/Biru
+            text_color = "#155724"
+            
+        else: 
+            # Overweight & Obesitas -> Link Defisit Kalori / Turun BB
+            link_url = "https://www.alodokter.com/diet-sehat-untuk-menurunkan-berat-badan" if lang == "Bahasa Indonesia" else "https://www.healthline.com/nutrition/how-to-lose-weight-as-fast-as-possible"
+            link_text = "📖 Panduan Diet Defisit Kalori & Turun BB" if lang == "Bahasa Indonesia" else "📖 Guide to Safe Diet & Weight Loss"
+            bg_color = "linear-gradient(to right, #ff758c 0%, #ff7eb3 100%)" # Gradasi Merah Muda/Merah
+            text_color = "#fff"
+            
+        # Membuat Kotak Tombol Tautan menggunakan HTML
+        st.markdown(f"""
+        <a href="{link_url}" target="_blank" style="text-decoration: none;">
+            <div class="link-box" style="background: {bg_color}; padding: 15px 20px; border-radius: 10px; text-align: center; color: {text_color}; font-weight: 800; font-size: 16px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1); transition: all 0.3s ease;">
+                {link_text}
+            </div>
+        </a>
+        """, unsafe_allow_html=True)
 
 # ==========================================
 # TAB 3: VISUALISASI DATASET LATIHAN

@@ -8,7 +8,6 @@ import time
 # ==========================================
 # 1. KONFIGURASI HALAMAN UTAMA
 # ==========================================
-# Wajib diletakkan paling atas untuk mengatur judul tab browser dan layout
 st.set_page_config(
     page_title="Prediksi Risiko Obesitas - Ensemble Learning", 
     page_icon="🥗", 
@@ -28,16 +27,15 @@ st.markdown("""
     }
     
     .stApp {
-        /* Kombinasi warna kontras: Soft Blue, Teal, Lilac, dan Pastel Pink */
         background: linear-gradient(-45deg, #e0c3fc, #8ec5fc, #a8edea, #fed6e3);
         background-size: 400% 400%;
-        animation: gradientAnimation 12s ease infinite; /* Animasi berulang setiap 12 detik */
+        animation: gradientAnimation 12s ease infinite; 
     }
     
     /* MEMPERCANTIK SIDEBAR DENGAN KONTRAST TINGGI */
     [data-testid="stSidebar"] {
         background-color: #ffffff !important;
-        box-shadow: 4px 0px 15px rgba(0, 0, 0, 0.05); /* Bayangan ke arah kanan */
+        box-shadow: 4px 0px 15px rgba(0, 0, 0, 0.05); 
         border-right: none;
     }
 
@@ -50,14 +48,13 @@ st.markdown("""
     }
 
     /* BATAS ANTARA TOOLS (GLASSMORPHISM EFFECT) */
-    /* Memberikan kotak pembungkus berwarna putih pada setiap elemen input */
     .stNumberInput, .stSelectbox, .stSlider {
-        background-color: rgba(255, 255, 255, 0.85); /* Putih dengan transparansi 15% */
+        background-color: rgba(255, 255, 255, 0.85); 
         padding: 15px 20px !important;
         border-radius: 12px;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.5);
-        margin-bottom: 12px; /* Jarak antar kotak tool */
+        margin-bottom: 12px; 
     }
 
     /* KONTRAST TEKS LABEL SLIDER & INPUT */
@@ -74,7 +71,7 @@ st.markdown("""
         background: linear-gradient(90deg, #1fa2ff 0%, #12d8fa 51%, #1fa2ff 100%) !important;
         background-size: 200% auto !important;
         color: white !important;
-        border-radius: 25px !important; /* Tombol melengkung modern */
+        border-radius: 25px !important; 
         border: none !important;
         padding: 12px 30px !important;
         font-weight: 800 !important;
@@ -83,7 +80,7 @@ st.markdown("""
         transition: 0.5s !important;
     }
     button[kind="primary"]:hover {
-        background-position: right center !important; /* Animasi gradasi bergeser saat dihover */
+        background-position: right center !important; 
         box-shadow: 0px 12px 20px rgba(31, 162, 255, 0.6) !important;
         transform: translateY(-3px);
     }
@@ -104,17 +101,14 @@ st.markdown("""
 # ==========================================
 @st.cache_resource
 def load_fast_model():
-    # Memuat model Ensemble Learning yang telah dilatih
     with open('model_ensemble_signifikan.pkl', 'rb') as f:
         saved_data = pickle.load(f)
     return saved_data
 
 @st.cache_data
 def load_data():
-    # Memuat data asli untuk kebutuhan visualisasi di Tab 3
     return pd.read_excel("KEL.2 obesitas Projek MCL 2.xlsx", sheet_name=0)
 
-# Animasi loading ringan (hanya berjalan sekali saat website pertama kali dibuka)
 if 'initialized' not in st.session_state:
     with st.spinner("🔮 Memuat Model Ensemble Learning..."):
         time.sleep(1.0)
@@ -133,17 +127,15 @@ except Exception as e:
     st.stop() 
 
 # ==========================================
-# 4. SIDEBAR & MENU NAVIGASI (DIPERBARUI)
+# 4. SIDEBAR & MENU NAVIGASI
 # ==========================================
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/2966/2966327.png", width=90)
     st.title("Menu / Nav")
     
-    # Toggle Bahasa
     lang = st.radio("🌐 Pilih Bahasa / Language", ["Bahasa Indonesia", "English"])
     st.divider()
     
-    # Kalkulator Hidrasi Dinamis
     st.subheader("💧 Target Air Harian" if lang == "Bahasa Indonesia" else "💧 Daily Water Target")
     lbl_bb = "Berat Badan Anda (kg)" if lang == "Bahasa Indonesia" else "Your Weight (kg)"
     bb_calc = st.number_input(lbl_bb, 30, 200, 60, key="water_calc")
@@ -152,15 +144,12 @@ with st.sidebar:
     lbl_hidrasi = "Kebutuhan Hidrasi Minimum" if lang == "Bahasa Indonesia" else "Minimum Hydration Need"
     lbl_liter = "Liter/hari" if lang == "Bahasa Indonesia" else "Liters/day"
     
-    # Kotak Hidrasi dengan kontras yang jelas
     st.markdown(f"""
     <div style="background: #f8f9fa; padding: 15px; border-radius: 12px; border: 2px solid #3498db; box-shadow: 0px 4px 6px rgba(0,0,0,0.05);">
         <p style="margin:0; color: #7f8c8d; font-size: 13px; font-weight: bold;">{lbl_hidrasi}</p>
         <h2 style="margin: 5px 0 0 0; color: #2980b9;">{hidrasi_air:.2f} <span style="font-size:14px; font-weight: normal;">{lbl_liter}</span></h2>
     </div>
     """, unsafe_allow_html=True)
-    
-    # Teks "Jamsix" telah dihapus dari sini sesuai permintaan Anda.
 
 # ==========================================
 # 5. TRANSLASI & KAMUS UI
@@ -202,7 +191,8 @@ if lang == "Bahasa Indonesia":
         "tab2_title": "📋 Rekomendasi Medis untuk Status:",
         "food_title": "🥗 Panduan Pola Konsumsi",
         "sport_title": "🚴 Panduan Aktivitas Fisik",
-        "chart_title": "📊 Statistik Representatif Grafik Dataset"
+        "chart_title": "📊 Statistik Representatif Grafik Dataset",
+        "goto_expert": "💡 **Untuk panduan gizi dan aktivitas fisik, silakan buka tab 'Saran Pakar' di atas.**"
     }
 else:
     ui = {
@@ -227,7 +217,8 @@ else:
         "tab2_title": "📋 Medical Recommendations for:",
         "food_title": "🥗 Diet & Nutrition Guide",
         "sport_title": "🚴 Physical Activity Guide",
-        "chart_title": "📊 Dataset Statistics Representation"
+        "chart_title": "📊 Dataset Statistics Representation",
+        "goto_expert": "💡 **For nutrition guides and physical activity advice, please open the 'Expert Advice' tab above.**"
     }
 
 st.title(ui["title"])
@@ -267,18 +258,15 @@ with tab1:
             
         bmi = weight / (height**2)
         
-        # Preprocessing Data Kategori
         gender_to_model = "Female" if gender_input in ["Perempuan", "Female"] else "Male"
         gender_encoded = encoders['Gender'].transform([gender_to_model])[0]
         
-        # Menyusun DataFrame sesuai fitur saat training model
         input_data = pd.DataFrame([{
             'Weight': float(weight), 'Height': float(height), 'Age': float(age),
             'FCVC': float(fcvc), 'TUE': float(tue), 'Gender': gender_encoded,
             'FAF': float(faf), 'CH2O': float(ch2o)
         }], columns=feature_names)
 
-        # Melakukan prediksi probabilitas dan mencari index dengan skor tertinggi
         probabilities = model.predict_proba(input_data)[0]
         prediction_idx = np.argmax(probabilities)
         hasil_prediksi_asli = classes[prediction_idx]
@@ -286,14 +274,12 @@ with tab1:
 
         hasil_terjemahan = terjemahkan_hasil_ai(hasil_prediksi_asli, lang)
 
-        # Menyimpan output ke session state
         st.session_state['res_asli'] = hasil_prediksi_asli
         st.session_state['res_terjemahan'] = hasil_terjemahan
 
         st.markdown("---")
         st.subheader(ui["res_title"])
 
-        # Alert hasil klasifikasi
         if "Obesity" in hasil_prediksi_asli:
             st.error(f"⚠️ **{ui['res_status']}: {hasil_terjemahan}**")
         elif "Overweight" in hasil_prediksi_asli or "Insufficient" in hasil_prediksi_asli:
@@ -304,7 +290,6 @@ with tab1:
 
         st.write("")
         
-        # Menampilkan metrik hasil prediksi
         res_col1, res_col2, res_col3 = st.columns(3)
         with res_col1:
             st.metric(label=ui["lbl_diag"], value=hasil_terjemahan)
@@ -315,6 +300,10 @@ with tab1:
         
         st.write("")
         st.progress(int(confidence_score) / 100)
+        
+        # --- PEMBERITAHUAN UNTUK MELIHAT TAB SARAN PAKAR DITAMBAHKAN DI SINI ---
+        st.write("")
+        st.info(ui["goto_expert"])
 
 # ==========================================
 # TAB 2: SARAN KESEHATAN MEDIS

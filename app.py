@@ -8,129 +8,147 @@ import time
 # ==========================================
 # 1. KONFIGURASI HALAMAN UTAMA
 # ==========================================
+# st.set_page_config harus selalu berada di baris pertama pemanggilan Streamlit
 st.set_page_config(
     page_title="Prediksi Risiko Obesitas - Ensemble Learning", 
     page_icon="🥗", 
-    layout="wide"
+    layout="wide" # Membuat tampilan penuh dari kiri ke kanan (tidak terkotak di tengah)
 )
 
 # ==========================================
-# 2. INJEKSI CUSTOM CSS (MEMPERCANTIK UI)
+# 2. INJEKSI CUSTOM CSS (UI LEBIH BERWARNA & HIDUP)
 # ==========================================
+# Menggunakan st.markdown untuk menyuntikkan kode HTML/CSS langsung ke dalam web
 st.markdown("""
 <style>
-    /* Latar belakang utama aplikasi (Gradien Soft Blue-Gray) */
+    /* Latar belakang utama aplikasi - Menggunakan Gradien Vibrant Pastel (Mint ke Soft Rose) */
     .stApp {
-        background: linear-gradient(135deg, #f4f7f6 0%, #e0eaf5 100%);
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
     }
     
-    /* Mempercantik Sidebar */
+    /* Mempercantik Sidebar dengan efek semi-transparan dan shadow */
     [data-testid="stSidebar"] {
-        background-color: #ffffff !important;
-        border-right: 1px solid #dce4ec;
+        background-color: rgba(255, 255, 255, 0.85) !important;
+        backdrop-filter: blur(10px);
+        border-right: 2px solid #ffb6c1;
     }
 
-    /* Warna judul agar lebih elegan (Navy Blue) */
+    /* Warna judul utama agar lebih elegan (Deep Purple/Blue) */
     h1, h2, h3 {
         color: #2c3e50 !important;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
     }
 
-    /* Mempercantik Tombol Utama (ANALISIS SEKARANG) */
+    /* Mempercantik Tombol Utama (ANALISIS SEKARANG) dengan Gradien Biru Laut */
     button[kind="primary"] {
-        background-color: #1abc9c !important; /* Warna Teal Profesional */
+        background: linear-gradient(to right, #00b4db, #0083b0) !important;
         color: white !important;
-        border-radius: 8px !important;
+        border-radius: 30px !important; /* Membuat tombol lebih bulat modern */
         border: none !important;
-        padding: 10px 24px !important;
-        font-weight: bold !important;
-        box-shadow: 0px 4px 10px rgba(26, 188, 156, 0.4) !important;
+        padding: 12px 24px !important;
+        font-weight: 800 !important;
+        letter-spacing: 1px;
+        box-shadow: 0px 8px 15px rgba(0, 131, 176, 0.4) !important;
         transition: all 0.3s ease !important;
     }
+    
+    /* Efek ketika tombol dilewati mouse (Hover) */
     button[kind="primary"]:hover {
-        background-color: #16a085 !important; /* Teal lebih gelap saat di-hover */
-        box-shadow: 0px 6px 15px rgba(26, 188, 156, 0.6) !important;
-        transform: translateY(-2px);
+        background: linear-gradient(to right, #0083b0, #00b4db) !important;
+        box-shadow: 0px 10px 20px rgba(0, 131, 176, 0.6) !important;
+        transform: translateY(-3px); /* Efek tombol terangkat */
     }
 
-    /* Kotak Metrik (Hasil, BMI, Akurasi) bergaya Card 3D */
+    /* Kotak Metrik (Hasil, BMI, Akurasi) bergaya Card 3D yang Cerah */
     [data-testid="stMetric"] {
         background-color: #ffffff;
-        border-radius: 12px;
-        padding: 15px 20px;
-        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.06);
-        border-left: 6px solid #1abc9c; /* Garis aksen Teal */
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.08);
+        border-left: 8px solid #ff0844; /* Garis aksen merah keunguan (Vibrant) */
+        transition: transform 0.2s;
+    }
+    [data-testid="stMetric"]:hover {
+        transform: scale(1.02); /* Efek membesar sedikit saat di-hover */
     }
 
-    /* Input Fields & Dropdowns (Shadow & Border Halus) */
+    /* Input Fields & Dropdowns (Border Biru Halus) */
     .stTextInput>div>div>input, .stNumberInput>div>div>input, .stSelectbox>div>div>div {
         border-radius: 8px;
-        border: 1px solid #ccd1d9;
-        box-shadow: inset 0px 2px 4px rgba(0,0,0,0.02);
+        border: 2px solid #a8edea;
+        background-color: rgba(255,255,255,0.9);
     }
     
-    /* Teks warna label slider agar tidak bentrok */
+    /* Teks warna label slider agar kontras dengan background cerah */
     .stSlider [data-testid="stMarkdownContainer"] p {
-        color: #34495e !important;
-        font-weight: 500;
+        color: #2c3e50 !important;
+        font-weight: bold;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 3. PROSES LOADING INSTAN
+# 3. FUNGSI LOADING DATA & MODEL (CACHING)
 # ==========================================
+# @st.cache_resource digunakan untuk meload model ML biner (.pkl). 
+# Ini mencegah Streamlit memuat ulang model dari awal setiap kali pengguna menggeser slider (menghemat memori & waktu komputasi).
 @st.cache_resource
 def load_fast_model():
     with open('model_ensemble_signifikan.pkl', 'rb') as f:
         saved_data = pickle.load(f)
     return saved_data
 
+# @st.cache_data digunakan khusus untuk dataframe/dataset
 @st.cache_data
 def load_data():
     return pd.read_excel("KEL.2 obesitas Projek MCL 2.xlsx", sheet_name=0)
 
-# Efek animasi loading
+# Efek animasi loading interaktif saat web pertama kali dibuka oleh klien
 if 'initialized' not in st.session_state:
     with st.spinner("🔮 Menyeduh ramuan algoritma AI... / Brewing AI algorithms..."):
         time.sleep(1.2)
     st.toast("✨ Selesai! / Done!", icon="🎉")
-    st.session_state['initialized'] = True
+    st.session_state['initialized'] = True # Menandai bahwa inisialisasi sudah selesai
 
+# Blok try-except sangat penting dalam deployment untuk menangkap error jika file pendukung hilang
 try:
     meta_data = load_fast_model()
-    model = meta_data['model']
-    encoders = meta_data['encoders']
-    feature_names = meta_data['features']
-    classes = meta_data['classes']
+    model = meta_data['model']           # Ekstraksi model machine learning
+    encoders = meta_data['encoders']     # Ekstraksi LabelEncoder/OneHotEncoder
+    feature_names = meta_data['features']# Ekstraksi nama kolom agar sesuai urutan saat diprediksi
+    classes = meta_data['classes']       # Ekstraksi nama target kelas (Normal, Obese, dll)
     df_raw = load_data()
 except Exception as e:
-    st.error("❌ File 'model_ensemble_signifikan.pkl' atau Excel tidak ditemukan!")
-    st.stop()
+    st.error("❌ File 'model_ensemble_signifikan.pkl' atau Excel tidak ditemukan! Pastikan file ada di folder yang sama.")
+    st.stop() # Menghentikan eksekusi web agar tidak muncul error merah panjang
 
 # ==========================================
 # 4. SIDEBAR & MENU NAVIGASI
 # ==========================================
 with st.sidebar:
-    # Ganti Ikon Bir dengan Ikon Kesehatan yang Elegan
     st.image("https://cdn-icons-png.flaticon.com/512/2966/2966327.png", width=90)
     st.title("Menu / Nav")
+    
+    # Toggle dinamis untuk melokalisasi bahasa UI
     lang = st.radio("🌐 Pilih Bahasa / Language", ["Bahasa Indonesia", "English"])
     st.divider()
     
+    # Fitur Kalkulator Mini Ekstra di Sidebar
     st.subheader("💧 Target Air Harian" if lang == "Bahasa Indonesia" else "💧 Daily Water Target")
     lbl_bb = "Berat Badan Anda (kg)" if lang == "Bahasa Indonesia" else "Your Weight (kg)"
     bb_calc = st.number_input(lbl_bb, 30, 200, 60)
     
-    # KOTAK HIDRASI CUSTOM YANG LEBIH CANTIK
+    # Rumus medis standar: 33ml per kg berat badan
     hidrasi_air = bb_calc * 0.033
     lbl_hidrasi = "Kebutuhan Hidrasi Minimum" if lang == "Bahasa Indonesia" else "Minimum Hydration Need"
     lbl_liter = "Liter/hari" if lang == "Bahasa Indonesia" else "Liters/day"
     
+    # UI Custom untuk Sidebar menggunakan HTML
     st.markdown(f"""
-    <div style="background-color: #e8f4f8; padding: 15px; border-radius: 10px; border-left: 5px solid #3498db; box-shadow: 0px 4px 6px rgba(0,0,0,0.05);">
-        <p style="margin:0; color: #2980b9; font-size: 13px; font-weight: bold;">{lbl_hidrasi}</p>
-        <h3 style="margin: 5px 0 0 0; color: #2c3e50;">{hidrasi_air:.2f} <span style="font-size:14px; font-weight: normal;">{lbl_liter}</span></h3>
+    <div style="background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); padding: 15px; border-radius: 12px; border-left: 6px solid #00b4db; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">
+        <p style="margin:0; color: #7f8c8d; font-size: 13px; font-weight: bold;">{lbl_hidrasi}</p>
+        <h3 style="margin: 5px 0 0 0; color: #2980b9;">{hidrasi_air:.2f} <span style="font-size:14px; font-weight: normal;">{lbl_liter}</span></h3>
     </div>
     """, unsafe_allow_html=True)
         
@@ -138,8 +156,10 @@ with st.sidebar:
     st.caption("🏆 AI Project Kelompok 2 - Jamsix")
 
 # ==========================================
-# 5. KAMUS BAHASA (DICTIONARY TERJEMAHAN)
+# 5. FUNGSI TRANSLASI KELAS (TARGET VARIABEL)
 # ==========================================
+# Model ML hanya mengerti dan mengeluarkan output bahasa Inggris (berdasarkan dataset asli).
+# Fungsi ini memetakan (mapping) output bahasa Inggris ke padanan kata medis dalam bahasa Indonesia.
 def terjemahkan_hasil_ai(hasil_asli, bahasa):
     kamus_indo = {
         'Insufficient_Weight': 'KEKURANGAN BERAT BADAN',
@@ -150,21 +170,14 @@ def terjemahkan_hasil_ai(hasil_asli, bahasa):
         'Obesity_Type_II': 'OBESITAS (Tipe II)',
         'Obesity_Type_III': 'OBESITAS EKSTRIM (Tipe III)'
     }
-    kamus_inggris = {
-        'Insufficient_Weight': 'INSUFFICIENT WEIGHT',
-        'Normal_Weight': 'NORMAL WEIGHT',
-        'Overweight_Level_I': 'OVERWEIGHT (Level I)',
-        'Overweight_Level_II': 'OVERWEIGHT (Level II)',
-        'Obesity_Type_I': 'OBESITY (Type I)',
-        'Obesity_Type_II': 'OBESITY (Type II)',
-        'Obesity_Type_III': 'EXTREME OBESITY (Type III)'
-    }
     
     if bahasa == "Bahasa Indonesia":
         return kamus_indo.get(hasil_asli, hasil_asli.replace('_', ' ').upper())
     else:
-        return kamus_inggris.get(hasil_asli, hasil_asli.replace('_', ' ').upper())
+        # Jika memilih bahasa Inggris, hapus underscore dan kapitalisasi
+        return hasil_asli.replace('_', ' ').upper()
 
+# Mengatur dictionary (kamus) untuk semua teks di antarmuka web berdasarkan pilihan radio button
 if lang == "Bahasa Indonesia":
     ui = {
         "title": "🥗 Penasihat AI Obesitas",
@@ -216,14 +229,16 @@ else:
         "chart_title": "📊 Dataset Statistics Representation"
     }
 
+# Render Header Web
 st.title(ui["title"])
 st.markdown(f"**{ui['subtitle']}**")
 st.divider()
 
+# Inisialisasi 3 Tab terpisah
 tab1, tab2, tab3 = st.tabs(ui["tabs"])
 
 # ==========================================
-# TAB 1: FORM INPUT UTAMA
+# TAB 1: FORM INPUT UTAMA & MACHINE LEARNING INFERENCE
 # ==========================================
 with tab1:
     col1, col2 = st.columns(2)
@@ -243,62 +258,88 @@ with tab1:
         tue = st.slider(ui["tue"], 0.0, 2.0, 1.0, step=1.0)
 
     st.write("")
+    
+    # TRIGGER PREDIKSI KETIKA TOMBOL DITEKAN
     if st.button(ui["btn"], type="primary", use_container_width=True):
+        # Efek visual proses komputasi
         with st.status(ui["load1"], expanded=True) as status:
             time.sleep(0.8)
             status.update(label=ui["load2"], state="running")
             time.sleep(0.5)
             status.update(label=ui["load3"], state="complete")
             
+        # Kalkulasi manual feature tambahan (BMI)
         bmi = weight / (height**2)
         
+        # 1. PREPROCESSING INPUT
+        # Model ML mengharuskan data kategori diubah menjadi numerik (0/1). 
+        # Kita menggunakan objek encoder yang telah di-fit saat training sebelumnya.
         gender_to_model = "Female" if gender_input in ["Perempuan", "Female"] else "Male"
         gender_encoded = encoders['Gender'].transform([gender_to_model])[0]
         
+        # DataFrame dibuat dengan urutan nama fitur (feature_names) yang EXACTLY SAMA seperti saat training
         input_data = pd.DataFrame([{
             'Weight': float(weight), 'Height': float(height), 'Age': float(age),
             'FCVC': float(fcvc), 'TUE': float(tue), 'Gender': gender_encoded,
             'FAF': float(faf), 'CH2O': float(ch2o)
         }], columns=feature_names)
 
+        # 2. INFERENSI (PREDIKSI)
+        # Menggunakan predict_proba() untuk mendapatkan nilai probabilitas dari setiap kelas.
+        # Ini memungkinkan kita melihat kelas mana yang memiliki "Soft Voting" tertinggi.
         probabilities = model.predict_proba(input_data)[0]
+        
+        # Mengambil index array dengan probabilitas tertinggi menggunakan numpy argmax
         prediction_idx = np.argmax(probabilities)
+        
+        # Mendapatkan nama kelas asli (bahasa inggris) dari array classes
         hasil_prediksi_asli = classes[prediction_idx]
+        
+        # Menghitung persentase keyakinan model (Confidence Score)
         confidence_score = probabilities[prediction_idx] * 100
 
+        # Menerjemahkan output AI agar sesuai bahasa yang dipilih di web
         hasil_terjemahan = terjemahkan_hasil_ai(hasil_prediksi_asli, lang)
 
+        # 3. PENYIMPANAN STATE (SESSION)
+        # Menyimpan hasil ke session_state agar Tab 2 bisa membacanya tanpa mereset data
         st.session_state['res_asli'] = hasil_prediksi_asli
         st.session_state['res_terjemahan'] = hasil_terjemahan
 
+        # 4. RENDERING HASIL
         st.markdown("---")
         st.subheader(ui["res_title"])
 
+        # Menampilkan Alert Box interaktif berdasarkan tingkat keparahan risiko kesehatan
         if "Obesity" in hasil_prediksi_asli:
             st.error(f"⚠️ **{ui['res_status']}: {hasil_terjemahan}**")
         elif "Overweight" in hasil_prediksi_asli or "Insufficient" in hasil_prediksi_asli:
             st.warning(f"⚠️ **{ui['res_status']}: {hasil_terjemahan}**")
         else:
             st.success(f"✅ **{ui['res_status']}: {hasil_terjemahan}**")
-            st.balloons()
+            st.balloons() # Efek animasi balon khusus jika hasilnya normal
 
         st.write("")
         
+        # Menampilkan 3 Metrik utama sejajar menggunakan kolom
         res_col1, res_col2, res_col3 = st.columns(3)
         with res_col1:
             st.metric(label=ui["lbl_diag"], value=hasil_terjemahan)
         with res_col2:
             st.metric(label=ui["lbl_bmi"], value=f"{bmi:.2f}")
         with res_col3:
+            # Memformat hasil skor probabilitas (contoh: 98.34%)
             st.metric(label=ui["lbl_conf"], value=f"{confidence_score:.2f}%")
         
         st.write("")
+        # Bar visual (Progress Bar) untuk mempresentasikan nilai probabilitas AI
         st.progress(int(confidence_score) / 100)
 
 # ==========================================
 # TAB 2: SARAN KESEHATAN MEDIS
 # ==========================================
 with tab2:
+    # Memeriksa apakah user sudah menekan tombol prediksi di Tab 1
     if 'res_terjemahan' not in st.session_state:
         st.info(ui["tab2_warn"])
     else:
@@ -306,6 +347,7 @@ with tab2:
         st.divider()
         
         c1, c2 = st.columns(2)
+        # Rekomendasi dinamis berdasarkan kelas yang diprediksi oleh AI
         with c1:
             st.subheader(ui["food_title"])
             if "Obesity" in st.session_state['res_asli']:
@@ -338,16 +380,18 @@ with tab2:
                     st.success("- Combine cardio and strength training 3-4 times a week.\n- Target **10.000 steps/day**.")
 
 # ==========================================
-# TAB 3: VISUALISASI
+# TAB 3: VISUALISASI DATASET LATIHAN
 # ==========================================
 with tab3:
     st.subheader(ui["chart_title"])
     g1, g2 = st.columns(2)
     with g1:
+        # Menggunakan Plotly Express (px) untuk membuat diagram pie yang interaktif
         pie_title = "Proporsi Kelas Obesitas" if lang == "Bahasa Indonesia" else "Obesity Class Proportions"
-        fig1 = px.pie(df_raw, names='NObeyesdad', title=pie_title, hole=0.3, color_discrete_sequence=px.colors.sequential.Teal)
+        fig1 = px.pie(df_raw, names='NObeyesdad', title=pie_title, hole=0.3, color_discrete_sequence=px.colors.sequential.Agsunset)
         st.plotly_chart(fig1, use_container_width=True)
     with g2:
+        # Histogram untuk melihat distribusi usia terkait dengan status obesitas
         hist_title = "Distribusi Usia Terhadap Status" if lang == "Bahasa Indonesia" else "Age Distribution by Status"
-        fig2 = px.histogram(df_raw, x="Age", color="NObeyesdad", title=hist_title, color_discrete_sequence=px.colors.qualitative.Pastel)
+        fig2 = px.histogram(df_raw, x="Age", color="NObeyesdad", title=hist_title, color_discrete_sequence=px.colors.qualitative.Set2)
         st.plotly_chart(fig2, use_container_width=True)

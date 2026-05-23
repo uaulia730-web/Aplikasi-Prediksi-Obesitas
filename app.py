@@ -224,7 +224,7 @@ with st.sidebar:
 # ==========================================
 st.markdown("""
 <div class="header-banner">
-    <h1>🩺 Penasihat AI Obesitas</h1>
+    <h1>🩺 OBE-BOOST: Klasifikasi Risiko Obesitas </h1>
     <p>⚡ Diagnostik Kesehatan Instan Berbasis Ensemble Machine Learning ⚡</p>
 </div>
 """, unsafe_allow_html=True)

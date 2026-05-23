@@ -17,28 +17,33 @@ st.set_page_config(
 )
 
 # ==========================================
-# 2. INJEKSI CSS BRUTE-FORCE (TEMA BIRU-TOSCA SELARAS)
+# 2. INJEKSI CSS BRUTE-FORCE (TEMA CERAH, ELEGAN & PROFESIONAL)
 # ==========================================
 st.markdown("""
 <style>
-    /* Mengimpor Font */
+    /* Mengimpor Font Poppins */
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
     html, body, [class*="css"] { font-family: 'Poppins', sans-serif !important; }
 
-    /* Latar Belakang Utama yang Bersih */
-    .stApp { background-color: #f4f7f9 !important; }
+    /* Latar Belakang Utama yang Bersih (Off-White) */
+    .stApp { background-color: #f8fafc !important; }
 
     /* ==============================================
-       SIDEBAR MENU (KEMBALI BERSIH & RAPI)
+       SIDEBAR MENU (CERAH, KONTRAST TINGGI & ELEGAN)
        ============================================== */
     [data-testid="stSidebar"] {
-        background-color: #ffffff !important;
-        box-shadow: 2px 0px 10px rgba(0,0,0,0.05) !important;
-        border-right: 1px solid #e2e8f0;
+        background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%) !important;
+        box-shadow: 4px 0px 15px rgba(0,0,0,0.05) !important;
+        border-right: 2px solid #7dd3fc !important;
+    }
+    /* Memastikan teks di sidebar berwarna gelap agar terbaca jelas */
+    [data-testid="stSidebar"] p, [data-testid="stSidebar"] span, [data-testid="stSidebar"] label {
+        color: #0f172a !important;
+        font-weight: 600 !important;
     }
     
     /* ==============================================
-       HEADER BANNER (SELARAS DENGAN TAB BIRU-TOSCA)
+       HEADER BANNER APLIKASI
        ============================================== */
     .header-banner {
         background: linear-gradient(135deg, #1A2980 0%, #26D0CE 100%);
@@ -63,10 +68,10 @@ st.markdown("""
     }
 
     /* ==============================================
-       STYLING TAB (TETAP KAPSUL 3D)
+       STYLING TAB (KAPSUL 3D)
        ============================================== */
     .stTabs [data-baseweb="tab-list"] {
-        background-color: #e2e8f0 !important; 
+        background-color: #f1f5f9 !important; 
         border-radius: 15px !important;
         padding: 8px !important;
         gap: 12px !important;
@@ -114,7 +119,7 @@ st.markdown("""
     }
 
     /* ==============================================
-       TOMBOL UTAMA (DISAMAKAN DENGAN TEMA BIRU-TOSCA)
+       TOMBOL UTAMA & ALERT
        ============================================== */
     button[kind="primary"] {
         background: linear-gradient(90deg, #1A2980 0%, #26D0CE 100%) !important;
@@ -132,41 +137,52 @@ st.markdown("""
         box-shadow: 0px 12px 25px rgba(38, 208, 206, 0.6) !important;
     }
     
-    /* Animasi Kotak Selamat Datang */
-    .welcome-box {
-        background-color: white;
-        padding: 50px;
+    /* Animasi Tampilan Awal (Welcome Screen) */
+    .welcome-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 8vh;
+    }
+    .welcome-card {
+        background: #ffffff;
+        padding: 50px 40px;
         border-radius: 20px;
-        box-shadow: 0px 10px 30px rgba(0,0,0,0.08);
+        box-shadow: 0px 20px 40px rgba(0,0,0,0.08);
+        border-top: 6px solid #26D0CE;
         text-align: center;
-        margin-top: 50px;
-        border-top: 5px solid #26D0CE;
+        max-width: 800px;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 3. TAMPILAN AWAL (WELCOME SCREEN) UNTUK ORANG BARU
+# 3. TAMPILAN AWAL (WELCOME SCREEN)
 # ==========================================
+# Menyambut pengguna baru dengan elegan sebelum masuk ke aplikasi utama
 if 'welcomed' not in st.session_state:
     st.session_state['welcomed'] = False
 
 if not st.session_state['welcomed']:
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.markdown("""
-        <div class="welcome-box">
-            <h1 style="color: #1A2980; font-weight: 900; font-size: 2.5rem;">👋 Selamat Datang!</h1>
-            <p style="color: #64748b; font-size: 1.1rem; margin-bottom: 30px;">
-                Anda telah memasuki <b>Penasihat AI Obesitas</b>. Sistem cerdas kami siap membantu Anda menganalisis kondisi fisik dan memberikan panduan kesehatan yang akurat secara instan.
+    st.markdown("""
+    <div class="welcome-container">
+        <div class="welcome-card">
+            <h1 style="font-size: 3rem; color: #1A2980; font-weight: 900; margin-bottom: 10px;">👋 Selamat Datang!</h1>
+            <h3 style="color: #26D0CE; font-weight: 700; margin-top: 0;">di Penasihat AI Obesitas</h3>
+            <p style="color: #475569; font-size: 1.15rem; line-height: 1.6; margin-top: 20px; margin-bottom: 40px;">
+                Ini adalah portal diagnostik kesehatan pintar Anda. Kami menggunakan teknologi <b>Ensemble Machine Learning</b> canggih untuk memprediksi tingkat risiko obesitas, menganalisis gaya hidup, dan memberikan saran pakar secara instan dan akurat.
             </p>
         </div>
-        <br>
-        """, unsafe_allow_html=True)
-        if st.button("🚀 Mulai Aplikasi Sekarang", type="primary", use_container_width=True):
+    </div>
+    <br>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 1.5, 1])
+    with col2:
+        if st.button("🚀 Mulai Analisis Kesehatan Anda Sekarang", type="primary", use_container_width=True):
             st.session_state['welcomed'] = True
             st.rerun()
-    st.stop() # Menghentikan script agar halaman utama tidak muncul sebelum tombol diklik
+    st.stop() # Hentikan eksekusi sisa web sampai tombol ditekan
 
 # ==========================================
 # 4. FUNGSI LOADING DATA & CACHING
@@ -193,29 +209,39 @@ except Exception as e:
     st.stop() 
 
 # ==========================================
-# 5. SIDEBAR MENU
+# 5. SIDEBAR MENU (CERAH & FITUR BARU)
 # ==========================================
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/2966/2966327.png", width=80)
-    st.markdown("<h2 style='color: #1A2980; font-weight: 800; margin-top: -10px;'>Menu / Nav</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color: #1A2980; font-weight: 900; margin-top: -10px;'>Menu Utama</h2>", unsafe_allow_html=True)
     
     lang = st.radio("Pilih Bahasa / Language", ["Bahasa Indonesia", "English"])
     st.divider()
     
-    st.markdown("### 💧 Target Air Harian" if lang == "Bahasa Indonesia" else "### 💧 Daily Water Target")
+    # --- FITUR BARU: PELACAK HIDRASI (WATER TRACKER) ---
+    st.markdown("### 💧 Pelacak Hidrasi Harian" if lang == "Bahasa Indonesia" else "### 💧 Daily Water Tracker")
     lbl_bb = "Berat Badan Anda (kg)" if lang == "Bahasa Indonesia" else "Your Weight (kg)"
     bb_calc = st.number_input(lbl_bb, 30, 200, 60, key="water_calc")
     
-    hidrasi_air = bb_calc * 0.033
-    lbl_hidrasi = "Kebutuhan Hidrasi Minimum" if lang == "Bahasa Indonesia" else "Minimum Hydration Need"
-    lbl_liter = "Liter/hari" if lang == "Bahasa Indonesia" else "Liters/day"
+    hidrasi_air = bb_calc * 0.033 # Target air minimum harian
     
     st.markdown(f"""
-    <div style="background: #ffffff; padding: 15px; border-radius: 12px; border: 1px solid #26D0CE; box-shadow: 0px 4px 6px rgba(0,0,0,0.05); text-align: center; margin-top: 10px;">
-        <p style="margin:0; font-size: 13px; font-weight: 600; color:#64748b;">{lbl_hidrasi}</p>
-        <h2 style="margin: 5px 0 0 0; font-weight: 800; color:#1A2980;">{hidrasi_air:.2f} <span style="font-size:14px;">{lbl_liter}</span></h2>
+    <div style="background: #ffffff; padding: 15px; border-radius: 12px; border: 2px solid #0ea5e9; box-shadow: 0px 4px 10px rgba(14, 165, 233, 0.2); text-align: center; margin-bottom: 20px;">
+        <p style="margin:0; font-size: 13px; color:#475569;">{'Target Minimum Anda:' if lang == 'Bahasa Indonesia' else 'Your Minimum Target:'}</p>
+        <h2 style="margin: 5px 0 0 0; font-weight: 800; color:#0284c7;">{hidrasi_air:.2f} <span style="font-size:14px;">{'Liter/hari' if lang == 'Bahasa Indonesia' else 'Liters/day'}</span></h2>
     </div>
     """, unsafe_allow_html=True)
+
+    # Input interaktif untuk jumlah yang sudah diminum
+    lbl_minum = "Sudah minum berapa banyak hari ini? (Liter)" if lang == "Bahasa Indonesia" else "How much have you drank today? (Liters)"
+    air_diminum = st.slider(lbl_minum, 0.0, 5.0, 0.0, step=0.1)
+    
+    # Kalkulasi Persentase Progress Bar
+    persentase_hidrasi = min(air_diminum / hidrasi_air, 1.0)
+    st.progress(persentase_hidrasi)
+    
+    if air_diminum >= hidrasi_air:
+        st.success("🎉 Target hidrasi harian tercapai!" if lang == "Bahasa Indonesia" else "🎉 Daily hydration target met!")
 
 # ==========================================
 # 6. HEADER BANNER APLIKASI
@@ -250,13 +276,13 @@ if lang == "Bahasa Indonesia":
         "phys": "👤 Profil Fisik", "gender_lbl": "Jenis Kelamin", "gender_opt": ["Perempuan", "Laki-laki"],
         "age": "Usia (Tahun)", "height": "Tinggi Badan (Meter)", "weight": "Berat Badan (Kilogram)",
         "life": "🍏 Pola Gaya Hidup",
-        "fcvc": "Frekuensi Makan Sayur (1: Jarang, 3: Selalu)", "ch2o": "Air Minum (Liter)",
+        "fcvc": "Frekuensi Makan Sayur (1: Jarang, 3: Selalu)", "ch2o": "Air Minum Harian (Liter)",
         "faf": "Aktivitas Fisik (0: Pasif, 3: Aktif)", "tue": "Layar Gadget (0: Sebentar, 2: Lama)",
         "btn": "🚀 JALANKAN DIAGNOSIS AI",
         "res_title": "📊 Hasil Analisis Medis", "res_status": "STATUS",
         "lbl_diag": "Hasil Diagnosis", "lbl_bmi": "Nilai BMI", "lbl_conf": "Akurasi AI",
         "tab2_title": "📋 Rekomendasi Medis untuk Status:",
-        "alert_saran": "💡 **Langkah Selanjutnya:** Klik tab **Saran Pakar** di atas untuk melihat panduan gizi lengkap dan rekomendasi olahraga khusus untuk Anda!"
+        "alert_saran": "💡 <b>Langkah Selanjutnya:</b> Klik tab <b>Saran Pakar</b> di bagian atas untuk melihat panduan gizi dan rekomendasi olahraga khusus untuk Anda!"
     }
 else:
     ui = {
@@ -264,13 +290,13 @@ else:
         "phys": "👤 Physical Profile", "gender_lbl": "Gender", "gender_opt": ["Female", "Male"],
         "age": "Age (Years)", "height": "Height (Meters)", "weight": "Weight (Kilograms)",
         "life": "🍏 Lifestyle Habits",
-        "fcvc": "Veggies (1: Rare, 3: Always)", "ch2o": "Water (Liters)",
+        "fcvc": "Veggies (1: Rare, 3: Always)", "ch2o": "Daily Water (Liters)",
         "faf": "Exercise (0: Passive, 3: Active)", "tue": "Screen Time (0: Short, 2: Long)",
         "btn": "🚀 RUN AI DIAGNOSTIC",
         "res_title": "📊 Medical Analysis Result", "res_status": "STATUS",
         "lbl_diag": "Diagnosis", "lbl_bmi": "BMI Value", "lbl_conf": "AI Accuracy",
         "tab2_title": "📋 Medical Recommendations for:",
-        "alert_saran": "💡 **Next Steps:** Click the **Expert Advice** tab above to view complete nutrition guides and exercise recommendations just for you!"
+        "alert_saran": "💡 <b>Next Step:</b> Click the <b>Expert Advice</b> tab above to view custom nutrition guides and exercise recommendations!"
     }
 
 tab1, tab2, tab3 = st.tabs(ui["tabs"])
@@ -282,14 +308,14 @@ with tab1:
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown(f"<h3 style='color: #1A2980; font-weight:700;'>{ui['phys']}</h3>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='color: #1A2980; font-weight:800;'>{ui['phys']}</h3>", unsafe_allow_html=True)
         gender_input = st.selectbox(ui["gender_lbl"], ui["gender_opt"])
         age = st.number_input(ui["age"], 1, 100, 21)
         height = st.number_input(ui["height"], 1.0, 2.5, 1.65, step=0.01)
         weight = st.number_input(ui["weight"], 10.0, 250.0, 60.0, step=0.5)
 
     with col2:
-        st.markdown(f"<h3 style='color: #1A2980; font-weight:700;'>{ui['life']}</h3>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='color: #1A2980; font-weight:800;'>{ui['life']}</h3>", unsafe_allow_html=True)
         fcvc = st.slider(ui["fcvc"], 1.0, 3.0, 2.0, step=1.0)
         ch2o = st.slider(ui["ch2o"], 1.0, 3.0, 2.0, step=0.5)
         faf = st.slider(ui["faf"], 0.0, 3.0, 1.0, step=1.0)
@@ -324,7 +350,7 @@ with tab1:
     # === TAMPILKAN HASIL JIKA SUDAH ADA DI SESSION ===
     if 'res_terjemahan' in st.session_state:
         st.markdown("---")
-        st.markdown(f"<div style='background:#ffffff; padding:15px; border-radius:15px; border: 2px solid #26D0CE; text-align:center; box-shadow: 0px 5px 15px rgba(0,0,0,0.05);'><h2 style='color: #1A2980; font-weight:800; margin:0;'>{ui['res_title']}</h2></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='background:#ffffff; padding:15px; border-radius:15px; border: 2px solid #26D0CE; text-align:center; box-shadow: 0px 5px 15px rgba(0,0,0,0.05);'><h2 style='color: #1A2980; font-weight:900; margin:0;'>{ui['res_title']}</h2></div>", unsafe_allow_html=True)
         st.write("")
 
         if "Obesity" in st.session_state['res_asli']:
@@ -363,10 +389,10 @@ with tab1:
         fig_gauge.update_layout(height=300, margin=dict(l=20, r=20, t=20, b=20))
         st.plotly_chart(fig_gauge, use_container_width=True)
 
-        # ---> INI ADALAH FITUR PEMBERITAHUAN UNTUK MASUK KE TAB SARAN PAKAR <---
+        # ---> PERINTAH MENCOLOK MENUJU TAB SARAN PAKAR <---
         st.markdown(f"""
-        <div style="background: linear-gradient(90deg, #1A2980 0%, #26D0CE 100%); padding: 15px 25px; border-radius: 12px; margin-top: 10px; margin-bottom: 20px; box-shadow: 0px 5px 15px rgba(38, 208, 206, 0.4);">
-            <p style="color: white !important; font-size: 16px; margin: 0; text-align: center;">{ui['alert_saran']}</p>
+        <div style="background: linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%); padding: 18px 25px; border-radius: 15px; margin-top: 20px; margin-bottom: 25px; box-shadow: 0px 8px 20px rgba(255, 75, 43, 0.4); text-align: center; border: 2px solid white;">
+            <p style="color: white !important; font-size: 1.1rem; margin: 0; font-weight: 500;">{ui['alert_saran']}</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -396,7 +422,7 @@ with tab2:
     if 'res_terjemahan' not in st.session_state:
         st.info("👈 Silakan lakukan prediksi pada tab pertama terlebih dahulu.")
     else:
-        st.markdown(f"<h3 style='color: #1A2980; font-weight:700;'>{ui['tab2_title']} {st.session_state['res_terjemahan']}</h3>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='color: #1A2980; font-weight:800;'>{ui['tab2_title']} {st.session_state['res_terjemahan']}</h3>", unsafe_allow_html=True)
         st.divider()
         
         c1, c2 = st.columns(2)
@@ -434,7 +460,7 @@ with tab2:
             
         st.markdown(f"""
         <a href="{link_url}" target="_blank" style="text-decoration: none;">
-            <div style="background: {bg_color}; padding: 15px; border-radius: 12px; text-align: center; color: white; font-weight: 700; font-size: 16px; box-shadow: 0px 5px 15px rgba(0,0,0,0.15); border: 2px solid white;">
+            <div style="background: {bg_color}; padding: 15px; border-radius: 12px; text-align: center; color: white; font-weight: 800; font-size: 16px; box-shadow: 0px 5px 15px rgba(0,0,0,0.15); border: 2px solid white;">
                 {link_text}
             </div>
         </a>
@@ -444,7 +470,7 @@ with tab2:
 # TAB 3: VISUALISASI DATASET LATIHAN
 # ==========================================
 with tab3:
-    st.markdown("<h3 style='color: #1A2980; font-weight:700;'>📊 Statistik Representatif Dataset</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #1A2980; font-weight:800;'>📊 Statistik Representatif Dataset</h3>", unsafe_allow_html=True)
     g1, g2 = st.columns(2)
     with g1:
         fig1 = px.pie(df_raw, names='NObeyesdad', title="Proporsi Kelas Obesitas", hole=0.3, color_discrete_sequence=px.colors.sequential.Teal)

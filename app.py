@@ -7,7 +7,7 @@ import pickle
 import time
 
 # ==========================================
-# 1. KONFIGURASI HALAMAN UTAMA (WAJIB PALING ATAS)
+# 1. KONFIGURASI HALAMAN UTAMA
 # ==========================================
 st.set_page_config(
     page_title="Prediksi Risiko Obesitas", 
@@ -17,21 +17,54 @@ st.set_page_config(
 )
 
 # ==========================================
-# 2. INJEKSI CSS BRUTE-FORCE (MEMAKSA TAMPILAN TAB)
+# 2. INJEKSI CSS BRUTE-FORCE (TEMA BIRU-TOSCA SELARAS)
 # ==========================================
 st.markdown("""
 <style>
     /* Mengimpor Font */
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
     html, body, [class*="css"] { font-family: 'Poppins', sans-serif !important; }
 
-    /* PAKSA BACKGROUND WARNA ABU-ABU KEBIRUAN */
-    .stApp { background-color: #f0f4f8 !important; }
+    /* Latar Belakang Utama yang Bersih */
+    .stApp { background-color: #f4f7f9 !important; }
 
     /* ==============================================
-       MEMAKSA TAB MENU BERWARNA DAN PUNYA BATAS (TIDAK POLOS)
+       SIDEBAR MENU (KEMBALI BERSIH & RAPI)
        ============================================== */
-    /* Background pembungkus semua tab */
+    [data-testid="stSidebar"] {
+        background-color: #ffffff !important;
+        box-shadow: 2px 0px 10px rgba(0,0,0,0.05) !important;
+        border-right: 1px solid #e2e8f0;
+    }
+    
+    /* ==============================================
+       HEADER BANNER (SELARAS DENGAN TAB BIRU-TOSCA)
+       ============================================== */
+    .header-banner {
+        background: linear-gradient(135deg, #1A2980 0%, #26D0CE 100%);
+        padding: 40px 20px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0px 10px 20px rgba(38, 208, 206, 0.25);
+        margin: 10px 0px 30px 0px;
+    }
+    .header-banner h1 {
+        color: #ffffff !important;
+        font-weight: 800;
+        font-size: 3.2rem !important;
+        margin: 0;
+        letter-spacing: -1px;
+    }
+    .header-banner p {
+        color: #e0f2fe !important;
+        font-size: 1.15rem;
+        font-weight: 500;
+        margin-top: 12px;
+    }
+
+    /* ==============================================
+       STYLING TAB (TETAP KAPSUL 3D)
+       ============================================== */
     .stTabs [data-baseweb="tab-list"] {
         background-color: #e2e8f0 !important; 
         border-radius: 15px !important;
@@ -39,26 +72,24 @@ st.markdown("""
         gap: 12px !important;
         box-shadow: inset 0px 3px 6px rgba(0,0,0,0.05) !important;
     }
-    
-    /* Bentuk tombol tab dasar (Belum diklik) */
     .stTabs [data-baseweb="tab"] {
         background-color: #ffffff !important;
         border-radius: 10px !important;
         padding: 10px 25px !important;
-        border: 2px solid #cbd5e1 !important; /* INI BATAS WARNANYA */
+        border: 2px solid #cbd5e1 !important; 
         box-shadow: 0px 2px 5px rgba(0,0,0,0.05) !important;
+        transition: 0.3s;
     }
     .stTabs [data-baseweb="tab"] p {
         color: #475569 !important;
         font-weight: 700 !important;
         font-size: 16px !important;
     }
-
-    /* Warna saat tab aktif/diklik (Menyala) */
+    /* Warna saat tab aktif */
     .stTabs [aria-selected="true"] {
         background: linear-gradient(90deg, #1A2980 0%, #26D0CE 100%) !important;
         border: 2px solid #1A2980 !important;
-        box-shadow: 0px 6px 15px rgba(38, 208, 206, 0.5) !important;
+        box-shadow: 0px 6px 15px rgba(38, 208, 206, 0.4) !important;
     }
     .stTabs [aria-selected="true"] p {
         color: #ffffff !important;
@@ -66,32 +97,39 @@ st.markdown("""
     }
 
     /* ==============================================
-       MEMAKSA KOTAK INPUT LEBIH JELAS
+       KOTAK INPUT (PUTIH BERSIH)
        ============================================== */
     .stNumberInput, .stSelectbox, .stSlider {
         background-color: #ffffff !important; 
         padding: 20px !important;
         border-radius: 15px !important;
-        border: 2px solid #cbd5e1 !important;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.05) !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.03) !important;
     }
     .stSlider [data-testid="stMarkdownContainer"] p, 
     .stNumberInput [data-testid="stMarkdownContainer"] p, 
     .stSelectbox [data-testid="stMarkdownContainer"] p {
         color: #1A2980 !important;
-        font-weight: 800 !important;
+        font-weight: 700 !important;
     }
 
-    /* TOMBOL UTAMA */
+    /* ==============================================
+       TOMBOL UTAMA (DISAMAKAN DENGAN TEMA BIRU-TOSCA)
+       ============================================== */
     button[kind="primary"] {
-        background: linear-gradient(90deg, #FF416C 0%, #FF4B2B 100%) !important;
+        background: linear-gradient(90deg, #1A2980 0%, #26D0CE 100%) !important;
         color: white !important;
         border-radius: 30px !important; 
         border: none !important;
         padding: 15px 30px !important;
-        font-weight: 900 !important;
+        font-weight: 800 !important;
         letter-spacing: 1px !important;
-        box-shadow: 0px 8px 20px rgba(255, 75, 43, 0.5) !important;
+        box-shadow: 0px 8px 20px rgba(38, 208, 206, 0.4) !important;
+        transition: 0.3s !important;
+    }
+    button[kind="primary"]:hover {
+        transform: translateY(-3px);
+        box-shadow: 0px 12px 25px rgba(38, 208, 206, 0.6) !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -121,10 +159,13 @@ except Exception as e:
     st.stop() 
 
 # ==========================================
-# 4. SIDEBAR MENU
+# 4. SIDEBAR MENU (KEMBALI KE DESAIN AWAL YANG CANTIK)
 # ==========================================
 with st.sidebar:
-    st.markdown("<h2 style='text-align: center; font-weight: 900;'>⚙️ Navigasi</h2>", unsafe_allow_html=True)
+    # Mengembalikan Ikon Awal
+    st.image("https://cdn-icons-png.flaticon.com/512/2966/2966327.png", width=80)
+    st.markdown("<h2 style='color: #1A2980; font-weight: 800; margin-top: -10px;'>Menu / Nav</h2>", unsafe_allow_html=True)
+    
     lang = st.radio("Pilih Bahasa / Language", ["Bahasa Indonesia", "English"])
     st.divider()
     
@@ -136,31 +177,21 @@ with st.sidebar:
     lbl_hidrasi = "Kebutuhan Hidrasi Minimum" if lang == "Bahasa Indonesia" else "Minimum Hydration Need"
     lbl_liter = "Liter/hari" if lang == "Bahasa Indonesia" else "Liters/day"
     
+    # Kotak Hidrasi dengan garis tepi tosca agar nyambung
     st.markdown(f"""
-    <div style="background: #e2e8f0; padding: 15px; border-radius: 12px; border: 2px solid #94a3b8; text-align: center;">
-        <p style="margin:0; font-size: 14px; font-weight: 700; color:#475569;">{lbl_hidrasi}</p>
-        <h2 style="margin: 5px 0 0 0; font-weight: 900; color:#1A2980;">{hidrasi_air:.2f} <span style="font-size:14px;">{lbl_liter}</span></h2>
+    <div style="background: #ffffff; padding: 15px; border-radius: 12px; border: 1px solid #26D0CE; box-shadow: 0px 4px 6px rgba(0,0,0,0.05); text-align: center; margin-top: 10px;">
+        <p style="margin:0; font-size: 13px; font-weight: 600; color:#64748b;">{lbl_hidrasi}</p>
+        <h2 style="margin: 5px 0 0 0; font-weight: 800; color:#1A2980;">{hidrasi_air:.2f} <span style="font-size:14px;">{lbl_liter}</span></h2>
     </div>
     """, unsafe_allow_html=True)
 
 # ==========================================
-# 5. HEADER BANNER APLIKASI (DIJAMIN MUNCUL CANTIK)
+# 5. HEADER BANNER APLIKASI (WARNA SELARAS DENGAN TAB)
 # ==========================================
-# Menggunakan Inline CSS di HTML agar Streamlit TIDAK BISA menimpanya!
 st.markdown("""
-<div style="background: linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%);
-            padding: 40px 20px;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: 0px 15px 30px rgba(255, 75, 43, 0.4);
-            margin: 10px 0px 30px 0px;
-            border: 4px solid #ffffff;">
-    <h1 style="color: #ffffff !important; font-weight: 900; font-size: 3.5rem !important; margin: 0; text-shadow: 3px 3px 6px rgba(0,0,0,0.3); font-family: sans-serif;">
-        🩺 Penasihat AI Obesitas
-    </h1>
-    <p style="color: #ffffff !important; font-size: 1.2rem; font-weight: 600; margin-top: 15px; background: rgba(0,0,0,0.2); display: inline-block; padding: 8px 20px; border-radius: 30px;">
-        ⚡ Diagnostik Kesehatan Instan Berbasis Ensemble Machine Learning ⚡
-    </p>
+<div class="header-banner">
+    <h1>🩺 Penasihat AI Obesitas</h1>
+    <p>⚡ Diagnostik Kesehatan Instan Berbasis Ensemble Machine Learning ⚡</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -217,14 +248,14 @@ with tab1:
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown(f"<h3 style='color: #1A2980; font-weight:800;'>{ui['phys']}</h3>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='color: #1A2980; font-weight:700;'>{ui['phys']}</h3>", unsafe_allow_html=True)
         gender_input = st.selectbox(ui["gender_lbl"], ui["gender_opt"])
         age = st.number_input(ui["age"], 1, 100, 21)
         height = st.number_input(ui["height"], 1.0, 2.5, 1.65, step=0.01)
         weight = st.number_input(ui["weight"], 10.0, 250.0, 60.0, step=0.5)
 
     with col2:
-        st.markdown(f"<h3 style='color: #1A2980; font-weight:800;'>{ui['life']}</h3>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='color: #1A2980; font-weight:700;'>{ui['life']}</h3>", unsafe_allow_html=True)
         fcvc = st.slider(ui["fcvc"], 1.0, 3.0, 2.0, step=1.0)
         ch2o = st.slider(ui["ch2o"], 1.0, 3.0, 2.0, step=0.5)
         faf = st.slider(ui["faf"], 0.0, 3.0, 1.0, step=1.0)
@@ -259,7 +290,7 @@ with tab1:
     # === TAMPILKAN HASIL ===
     if 'res_terjemahan' in st.session_state:
         st.markdown("---")
-        st.markdown(f"<div style='background:#ffffff; padding:15px; border-radius:15px; border: 3px solid #1A2980; text-align:center; box-shadow: 0px 5px 15px rgba(0,0,0,0.1);'><h2 style='color: #1A2980; font-weight:900; margin:0;'>{ui['res_title']}</h2></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='background:#ffffff; padding:15px; border-radius:15px; border: 2px solid #26D0CE; text-align:center; box-shadow: 0px 5px 15px rgba(0,0,0,0.05);'><h2 style='color: #1A2980; font-weight:800; margin:0;'>{ui['res_title']}</h2></div>", unsafe_allow_html=True)
         st.write("")
 
         if "Obesity" in st.session_state['res_asli']:
@@ -298,14 +329,33 @@ with tab1:
         fig_gauge.update_layout(height=300, margin=dict(l=20, r=20, t=20, b=20))
         st.plotly_chart(fig_gauge, use_container_width=True)
 
+        laporan_teks = f"""=====================================
+LAPORAN DIAGNOSTIK KESEHATAN AI
+=====================================
+Status Akhir  : {st.session_state['res_terjemahan']}
+Nilai BMI     : {st.session_state['bmi']:.2f}
+Akurasi Mesin : {st.session_state['conf']:.2f}%
+
+*Catatan: Dokumen ini dicetak otomatis oleh sistem Penasihat AI Obesitas.
+Untuk rekomendasi diet, ikuti arahan dari tenaga medis profesional.
+====================================="""
+        
+        st.download_button(
+            label="📥 Unduh Laporan Medis (TXT)",
+            data=laporan_teks,
+            file_name="Laporan_Kesehatan_AI.txt",
+            mime="text/plain",
+            type="primary"
+        )
+
 # ==========================================
-# TAB 2: SARAN KESEHATAN MEDIS
+# TAB 2: SARAN KESEHATAN MEDIS & TAUTAN
 # ==========================================
 with tab2:
     if 'res_terjemahan' not in st.session_state:
         st.info("👈 Silakan lakukan prediksi pada tab pertama terlebih dahulu.")
     else:
-        st.markdown(f"<h3 style='color: #1A2980; font-weight:800;'>{ui['tab2_title']} {st.session_state['res_terjemahan']}</h3>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='color: #1A2980; font-weight:700;'>{ui['tab2_title']} {st.session_state['res_terjemahan']}</h3>", unsafe_allow_html=True)
         st.divider()
         
         c1, c2 = st.columns(2)
@@ -339,11 +389,11 @@ with tab2:
         else: 
             link_url = "https://www.siloamhospitals.com/informasi-siloam/artikel/cara-diet-sehat-dan-cepat" if lang == "Bahasa Indonesia" else "https://www.mayoclinic.org/healthy-lifestyle/weight-loss/in-depth/weight-loss/art-20047752"
             link_text = "📖 Panduan Diet Defisit Kalori & Turun BB"
-            bg_color = "linear-gradient(135deg, #ff416c, #ff4b2b)" 
+            bg_color = "linear-gradient(135deg, #FF416C, #FF4B2B)" 
             
         st.markdown(f"""
         <a href="{link_url}" target="_blank" style="text-decoration: none;">
-            <div style="background: {bg_color}; padding: 15px; border-radius: 12px; text-align: center; color: white; font-weight: 800; font-size: 16px; box-shadow: 0px 5px 15px rgba(0,0,0,0.15); border: 2px solid white;">
+            <div style="background: {bg_color}; padding: 15px; border-radius: 12px; text-align: center; color: white; font-weight: 700; font-size: 16px; box-shadow: 0px 5px 15px rgba(0,0,0,0.15); border: 2px solid white;">
                 {link_text}
             </div>
         </a>
@@ -353,10 +403,10 @@ with tab2:
 # TAB 3: VISUALISASI DATASET LATIHAN
 # ==========================================
 with tab3:
-    st.markdown("<h3 style='color: #1A2980; font-weight:800;'>📊 Statistik Representatif Dataset</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #1A2980; font-weight:700;'>📊 Statistik Representatif Dataset</h3>", unsafe_allow_html=True)
     g1, g2 = st.columns(2)
     with g1:
-        fig1 = px.pie(df_raw, names='NObeyesdad', title="Proporsi Kelas Obesitas", hole=0.3, color_discrete_sequence=px.colors.sequential.Agsunset)
+        fig1 = px.pie(df_raw, names='NObeyesdad', title="Proporsi Kelas Obesitas", hole=0.3, color_discrete_sequence=px.colors.sequential.Teal)
         st.plotly_chart(fig1, use_container_width=True)
     with g2:
         fig2 = px.histogram(df_raw, x="Age", color="NObeyesdad", title="Distribusi Usia", color_discrete_sequence=px.colors.qualitative.Pastel)

@@ -131,11 +131,45 @@ st.markdown("""
         transform: translateY(-3px);
         box-shadow: 0px 12px 25px rgba(38, 208, 206, 0.6) !important;
     }
+    
+    /* Animasi Kotak Selamat Datang */
+    .welcome-box {
+        background-color: white;
+        padding: 50px;
+        border-radius: 20px;
+        box-shadow: 0px 10px 30px rgba(0,0,0,0.08);
+        text-align: center;
+        margin-top: 50px;
+        border-top: 5px solid #26D0CE;
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 3. FUNGSI LOADING DATA & CACHING
+# 3. TAMPILAN AWAL (WELCOME SCREEN) UNTUK ORANG BARU
+# ==========================================
+if 'welcomed' not in st.session_state:
+    st.session_state['welcomed'] = False
+
+if not st.session_state['welcomed']:
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.markdown("""
+        <div class="welcome-box">
+            <h1 style="color: #1A2980; font-weight: 900; font-size: 2.5rem;">👋 Selamat Datang!</h1>
+            <p style="color: #64748b; font-size: 1.1rem; margin-bottom: 30px;">
+                Anda telah memasuki <b>Penasihat AI Obesitas</b>. Sistem cerdas kami siap membantu Anda menganalisis kondisi fisik dan memberikan panduan kesehatan yang akurat secara instan.
+            </p>
+        </div>
+        <br>
+        """, unsafe_allow_html=True)
+        if st.button("🚀 Mulai Aplikasi Sekarang", type="primary", use_container_width=True):
+            st.session_state['welcomed'] = True
+            st.rerun()
+    st.stop() # Menghentikan script agar halaman utama tidak muncul sebelum tombol diklik
+
+# ==========================================
+# 4. FUNGSI LOADING DATA & CACHING
 # ==========================================
 @st.cache_resource
 def load_fast_model():
@@ -159,10 +193,9 @@ except Exception as e:
     st.stop() 
 
 # ==========================================
-# 4. SIDEBAR MENU (KEMBALI KE DESAIN AWAL YANG CANTIK)
+# 5. SIDEBAR MENU
 # ==========================================
 with st.sidebar:
-    # Mengembalikan Ikon Awal
     st.image("https://cdn-icons-png.flaticon.com/512/2966/2966327.png", width=80)
     st.markdown("<h2 style='color: #1A2980; font-weight: 800; margin-top: -10px;'>Menu / Nav</h2>", unsafe_allow_html=True)
     
@@ -177,7 +210,6 @@ with st.sidebar:
     lbl_hidrasi = "Kebutuhan Hidrasi Minimum" if lang == "Bahasa Indonesia" else "Minimum Hydration Need"
     lbl_liter = "Liter/hari" if lang == "Bahasa Indonesia" else "Liters/day"
     
-    # Kotak Hidrasi dengan garis tepi tosca agar nyambung
     st.markdown(f"""
     <div style="background: #ffffff; padding: 15px; border-radius: 12px; border: 1px solid #26D0CE; box-shadow: 0px 4px 6px rgba(0,0,0,0.05); text-align: center; margin-top: 10px;">
         <p style="margin:0; font-size: 13px; font-weight: 600; color:#64748b;">{lbl_hidrasi}</p>
@@ -186,7 +218,7 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
 # ==========================================
-# 5. HEADER BANNER APLIKASI (WARNA SELARAS DENGAN TAB)
+# 6. HEADER BANNER APLIKASI
 # ==========================================
 st.markdown("""
 <div class="header-banner">
@@ -196,7 +228,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 6. TRANSLASI KELAS UI
+# 7. TRANSLASI KELAS UI & KAMUS BAHASA
 # ==========================================
 def terjemahkan_hasil_ai(hasil_asli, bahasa):
     kamus_indo = {
@@ -223,7 +255,8 @@ if lang == "Bahasa Indonesia":
         "btn": "🚀 JALANKAN DIAGNOSIS AI",
         "res_title": "📊 Hasil Analisis Medis", "res_status": "STATUS",
         "lbl_diag": "Hasil Diagnosis", "lbl_bmi": "Nilai BMI", "lbl_conf": "Akurasi AI",
-        "tab2_title": "📋 Rekomendasi Medis untuk Status:"
+        "tab2_title": "📋 Rekomendasi Medis untuk Status:",
+        "alert_saran": "💡 **Langkah Selanjutnya:** Klik tab **Saran Pakar** di atas untuk melihat panduan gizi lengkap dan rekomendasi olahraga khusus untuk Anda!"
     }
 else:
     ui = {
@@ -236,7 +269,8 @@ else:
         "btn": "🚀 RUN AI DIAGNOSTIC",
         "res_title": "📊 Medical Analysis Result", "res_status": "STATUS",
         "lbl_diag": "Diagnosis", "lbl_bmi": "BMI Value", "lbl_conf": "AI Accuracy",
-        "tab2_title": "📋 Medical Recommendations for:"
+        "tab2_title": "📋 Medical Recommendations for:",
+        "alert_saran": "💡 **Next Steps:** Click the **Expert Advice** tab above to view complete nutrition guides and exercise recommendations just for you!"
     }
 
 tab1, tab2, tab3 = st.tabs(ui["tabs"])
@@ -287,7 +321,7 @@ with tab1:
         st.session_state['bmi'] = bmi
         st.session_state['conf'] = confidence_score
 
-    # === TAMPILKAN HASIL ===
+    # === TAMPILKAN HASIL JIKA SUDAH ADA DI SESSION ===
     if 'res_terjemahan' in st.session_state:
         st.markdown("---")
         st.markdown(f"<div style='background:#ffffff; padding:15px; border-radius:15px; border: 2px solid #26D0CE; text-align:center; box-shadow: 0px 5px 15px rgba(0,0,0,0.05);'><h2 style='color: #1A2980; font-weight:800; margin:0;'>{ui['res_title']}</h2></div>", unsafe_allow_html=True)
@@ -328,6 +362,13 @@ with tab1:
             }))
         fig_gauge.update_layout(height=300, margin=dict(l=20, r=20, t=20, b=20))
         st.plotly_chart(fig_gauge, use_container_width=True)
+
+        # ---> INI ADALAH FITUR PEMBERITAHUAN UNTUK MASUK KE TAB SARAN PAKAR <---
+        st.markdown(f"""
+        <div style="background: linear-gradient(90deg, #1A2980 0%, #26D0CE 100%); padding: 15px 25px; border-radius: 12px; margin-top: 10px; margin-bottom: 20px; box-shadow: 0px 5px 15px rgba(38, 208, 206, 0.4);">
+            <p style="color: white !important; font-size: 16px; margin: 0; text-align: center;">{ui['alert_saran']}</p>
+        </div>
+        """, unsafe_allow_html=True)
 
         laporan_teks = f"""=====================================
 LAPORAN DIAGNOSTIK KESEHATAN AI

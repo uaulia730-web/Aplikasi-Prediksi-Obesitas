@@ -10,14 +10,14 @@ import time
 # 1. KONFIGURASI HALAMAN UTAMA
 # ==========================================
 st.set_page_config(
-    page_title="Prediksi Risiko Obesitas", 
+    page_title="OBE-BOOST: Klasifikasi Risiko Obesitas", 
     page_icon="🩺", 
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # ==========================================
-# 2. INJEKSI CSS BRUTE-FORCE (TEMA CERAH, ELEGAN & PROFESIONAL)
+# 2. INJEKSI CSS BRUTE-FORCE (CERAH, ELEGAN & PROFESIONAL)
 # ==========================================
 st.markdown("""
 <style>
@@ -26,11 +26,15 @@ st.markdown("""
 
     .stApp { background-color: #f8fafc !important; }
 
+    /* ==============================================
+       SIDEBAR MENU - Gradasi Biru Medis Premium
+       ============================================== */
     [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%) !important;
+        background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%) !important;
         box-shadow: 4px 0px 15px rgba(0,0,0,0.05) !important;
-        border-right: 2px solid #7dd3fc !important;
+        border-right: 2px solid #bae6fd !important;
     }
+    /* Memastikan teks di sidebar berwarna gelap agar kontras */
     [data-testid="stSidebar"] p, [data-testid="stSidebar"] span, [data-testid="stSidebar"] label {
         color: #0f172a !important;
         font-weight: 600 !important;
@@ -147,9 +151,9 @@ if not st.session_state['welcomed']:
     <div class="welcome-container">
         <div class="welcome-card">
             <h1 style="font-size: 3rem; color: #1A2980; font-weight: 900; margin-bottom: 10px;">👋 Selamat Datang!</h1>
-            <h3 style="color: #26D0CE; font-weight: 700; margin-top: 0;">di Penasihat AI Obesitas</h3>
+            <h3 style="color: #26D0CE; font-weight: 700; margin-top: 0;">di OBE-BOOST AI</h3>
             <p style="color: #475569; font-size: 1.15rem; line-height: 1.6; margin-top: 20px; margin-bottom: 40px;">
-                Ini adalah portal diagnostik kesehatan pintar Anda. Kami menggunakan teknologi <b>Ensemble Machine Learning</b> canggih untuk memprediksi tingkat risiko obesitas, menganalisis gaya hidup, dan memberikan saran pakar secara instan dan akurat.
+                Ini adalah portal diagnostik kesehatan pintar Anda. Kami menggunakan teknologi <b>Ensemble Machine Learning</b> canggih untuk memprediksi tingkat risiko obesitas, menganalisis gaya hidup, dan memberikan saran medis secara instan dan akurat.
             </p>
         </div>
     </div>
@@ -188,15 +192,16 @@ except Exception as e:
     st.stop() 
 
 # ==========================================
-# 5. SIDEBAR MENU
+# 5. SIDEBAR MENU (DENGAN FITUR BARU & WARNA)
 # ==========================================
 with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/2966/2966327.png", width=80)
-    st.markdown("<h2 style='color: #1A2980; font-weight: 900; margin-top: -10px;'>Menu Utama</h2>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: center;'><img src='https://cdn-icons-png.flaticon.com/512/2966/2966327.png' width='80'></div>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color: #1A2980; font-weight: 900; text-align:center; margin-top: -10px;'>Menu Utama</h2>", unsafe_allow_html=True)
     
-    lang = st.radio("Pilih Bahasa / Language", ["Bahasa Indonesia", "English"])
+    lang = st.radio("Pilih Bahasa / Language", ["Bahasa Indonesia", "English"], label_visibility="collapsed")
     st.divider()
     
+    # --- FITUR 1: PELACAK HIDRASI ---
     st.markdown("### 💧 Pelacak Hidrasi Harian" if lang == "Bahasa Indonesia" else "### 💧 Daily Water Tracker")
     lbl_bb = "Berat Badan Anda (kg)" if lang == "Bahasa Indonesia" else "Your Weight (kg)"
     bb_calc = st.number_input(lbl_bb, 30, 200, 60, key="water_calc")
@@ -204,9 +209,9 @@ with st.sidebar:
     hidrasi_air = bb_calc * 0.033 
     
     st.markdown(f"""
-    <div style="background: #ffffff; padding: 15px; border-radius: 12px; border: 2px solid #0ea5e9; box-shadow: 0px 4px 10px rgba(14, 165, 233, 0.2); text-align: center; margin-bottom: 20px;">
-        <p style="margin:0; font-size: 13px; color:#475569;">{'Target Minimum Anda:' if lang == 'Bahasa Indonesia' else 'Your Minimum Target:'}</p>
-        <h2 style="margin: 5px 0 0 0; font-weight: 800; color:#0284c7;">{hidrasi_air:.2f} <span style="font-size:14px;">{'Liter/hari' if lang == 'Bahasa Indonesia' else 'Liters/day'}</span></h2>
+    <div style="background: #ffffff; padding: 15px; border-radius: 12px; border: 2px solid #38bdf8; box-shadow: 0px 4px 10px rgba(56, 189, 248, 0.2); text-align: center; margin-bottom: 20px;">
+        <p style="margin:0; font-size: 13px; color:#64748b; font-weight: 600;">{'Target Minimum Anda:' if lang == 'Bahasa Indonesia' else 'Your Minimum Target:'}</p>
+        <h2 style="margin: 5px 0 0 0; font-weight: 800; color:#0284c7;">{hidrasi_air:.2f} <span style="font-size:14px; font-weight: normal;">{'Liter/hari' if lang == 'Bahasa Indonesia' else 'Liters/day'}</span></h2>
     </div>
     """, unsafe_allow_html=True)
 
@@ -218,6 +223,19 @@ with st.sidebar:
     
     if air_diminum >= hidrasi_air:
         st.success("🎉 Target hidrasi harian tercapai!" if lang == "Bahasa Indonesia" else "🎉 Daily hydration target met!")
+
+    st.divider()
+
+    # --- FITUR 2 (BARU): ESTIMATOR BAKAR KALORI ---
+    st.markdown("### 🔥 Target Bakar Kalori" if lang == "Bahasa Indonesia" else "### 🔥 Calorie Burn Target")
+    kalori_terbakar = bb_calc * 4.5 # Estimasi kalori terbakar per 10k langkah
+    
+    st.markdown(f"""
+    <div style="background: linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%); padding: 15px; border-radius: 12px; box-shadow: 0px 4px 10px rgba(255, 65, 108, 0.3); text-align: center; margin-bottom: 20px;">
+        <p style="margin:0; font-size: 13px; color:#ffe4e6; font-weight: 600;">{'Estimasi kalori terbakar jika jalan 10.000 langkah:' if lang == 'Bahasa Indonesia' else 'Est. calories burned walking 10k steps:'}</p>
+        <h2 style="margin: 5px 0 0 0; font-weight: 800; color:#ffffff;">{kalori_terbakar:.0f} <span style="font-size:14px; font-weight: normal;">kkal</span></h2>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ==========================================
 # 6. HEADER BANNER APLIKASI
@@ -258,7 +276,9 @@ if lang == "Bahasa Indonesia":
         "res_title": "📊 Hasil Analisis Medis", "res_status": "STATUS",
         "lbl_diag": "Hasil Diagnosis", "lbl_bmi": "Nilai BMI", "lbl_conf": "Akurasi AI",
         "tab2_title": "📋 Rekomendasi Medis untuk Status:",
-        "alert_saran": "💡 <b>Langkah Selanjutnya:</b> Klik tab <b>Saran Pakar</b> di bagian atas untuk melihat panduan gizi dan rekomendasi kesehatan khusus untuk Anda!"
+        # Teks ini saya ubah jadi raw string tanpa markdown bintang-bintang agar warna putihnya tidak tertimpa
+        "alert_title": "💡 LANGKAH SELANJUTNYA:",
+        "alert_desc": "Klik tab Saran Pakar di bagian atas untuk melihat panduan gizi dan rekomendasi kesehatan khusus untuk Anda!"
     }
 else:
     ui = {
@@ -272,7 +292,8 @@ else:
         "res_title": "📊 Medical Analysis Result", "res_status": "STATUS",
         "lbl_diag": "Diagnosis", "lbl_bmi": "BMI Value", "lbl_conf": "AI Accuracy",
         "tab2_title": "📋 Medical Recommendations for:",
-        "alert_saran": "💡 <b>Next Step:</b> Click the <b>Expert Advice</b> tab above to view custom nutrition guides and health recommendations!"
+        "alert_title": "💡 NEXT STEP:",
+        "alert_desc": "Click the Expert Advice tab above to view custom nutrition guides and health recommendations!"
     }
 
 tab1, tab2, tab3 = st.tabs(ui["tabs"])
@@ -365,9 +386,11 @@ with tab1:
         fig_gauge.update_layout(height=300, margin=dict(l=20, r=20, t=20, b=20))
         st.plotly_chart(fig_gauge, use_container_width=True)
 
+        # ---> PERBAIKAN PEMBERITAHUAN SARAN PAKAR (HTML MURNI AGAR WARNA PUTIH 100% AMAN) <---
         st.markdown(f"""
-        <div style="background: linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%); padding: 18px 25px; border-radius: 15px; margin-top: 20px; margin-bottom: 25px; box-shadow: 0px 8px 20px rgba(255, 75, 43, 0.4); text-align: center; border: 2px solid white;">
-            <p style="color: white !important; font-size: 1.1rem; margin: 0; font-weight: 500;">{ui['alert_saran']}</p>
+        <div style="background: linear-gradient(90deg, #1A2980 0%, #26D0CE 100%); padding: 18px 25px; border-radius: 12px; margin-top: 10px; margin-bottom: 25px; box-shadow: 0px 8px 20px rgba(38, 208, 206, 0.4); text-align: center; border: 2px solid white;">
+            <span style="color: #ffffff !important; font-size: 1.1rem; font-weight: 800;">{ui['alert_title']}</span>
+            <span style="color: #ffffff !important; font-size: 1.1rem; font-weight: 500;">{ui['alert_desc']}</span>
         </div>
         """, unsafe_allow_html=True)
 
@@ -391,7 +414,7 @@ Untuk rekomendasi diet, ikuti arahan dari tenaga medis profesional.
         )
 
 # ==========================================
-# TAB 2: SARAN KESEHATAN MEDIS & TAUTAN (DENGAN 7 KATEGORI)
+# TAB 2: SARAN KESEHATAN MEDIS & TAUTAN
 # ==========================================
 with tab2:
     if 'res_terjemahan' not in st.session_state:
@@ -423,43 +446,36 @@ with tab2:
         # --- LOGIKA 7 KATEGORI LINK MEDIS ---
         kategori = st.session_state['res_asli']
         
-        # 1. Kurus (Insufficient Weight)
         if kategori == 'Insufficient_Weight':
             link_url = "https://www.siloamhospitals.com/informasi-siloam/artikel/cara-menambah-berat-badan" if lang == "Bahasa Indonesia" else "https://www.healthline.com/nutrition/how-to-gain-weight"
             link_text = "📖 Cara Sehat Menambah Berat Badan & Massa Otot" if lang == "Bahasa Indonesia" else "📖 Healthy Ways to Gain Weight"
             bg_color = "linear-gradient(135deg, #f6d365, #fda085)" 
             
-        # 2. Normal (Normal Weight)
         elif kategori == 'Normal_Weight':
             link_url = "https://www.siloamhospitals.com/informasi-siloam/artikel/pola-hidup-sehat" if lang == "Bahasa Indonesia" else "https://www.who.int/news-room/fact-sheets/detail/healthy-diet"
             link_text = "📖 Panduan Mempertahankan Pola Hidup Sehat" if lang == "Bahasa Indonesia" else "📖 Guide to Maintaining a Healthy Diet"
             bg_color = "linear-gradient(135deg, #11998e, #38ef7d)" 
             
-        # 3. Overweight Tingkat 1
         elif kategori == 'Overweight_Level_I':
             link_url = "https://www.halodoc.com/artikel/ini-cara-diet-sehat-untuk-menurunkan-berat-badan" if lang == "Bahasa Indonesia" else "https://www.mayoclinic.org/healthy-lifestyle/weight-loss/in-depth/weight-loss/art-20047752"
             link_text = "📖 Panduan Defisit Kalori Pemula (Turun BB Ringan)" if lang == "Bahasa Indonesia" else "📖 Basic Calorie Deficit & Weight Loss Guide"
             bg_color = "linear-gradient(135deg, #f2994a, #f2c94c)" 
 
-        # 4. Overweight Tingkat 2
         elif kategori == 'Overweight_Level_II':
             link_url = "https://www.alodokter.com/diet-sehat-untuk-menurunkan-berat-badan" if lang == "Bahasa Indonesia" else "https://www.healthline.com/nutrition/how-to-lose-weight-as-fast-as-possible"
             link_text = "📖 Strategi Efektif Penurunan Berat Badan (Diet Sehat)" if lang == "Bahasa Indonesia" else "📖 Effective Weight Loss Strategies"
             bg_color = "linear-gradient(135deg, #FF416C, #FF4B2B)" 
 
-        # 5. Obesitas Tipe 1
         elif kategori == 'Obesity_Type_I':
             link_url = "https://www.siloamhospitals.com/informasi-siloam/artikel/apa-itu-obesitas" if lang == "Bahasa Indonesia" else "https://www.mayoclinic.org/diseases-conditions/obesity/diagnosis-treatment/drc-20375749"
             link_text = "📖 Pemahaman Bahaya Obesitas & Penanganan Dasar" if lang == "Bahasa Indonesia" else "📖 Obesity Management and Diagnosis"
             bg_color = "linear-gradient(135deg, #e52d27, #b31217)" 
 
-        # 6. Obesitas Tipe 2
         elif kategori == 'Obesity_Type_II':
             link_url = "https://www.alodokter.com/obesitas" if lang == "Bahasa Indonesia" else "https://www.clevelandclinic.org/health/diseases/11209-weight-control-and-obesity"
             link_text = "📖 Penanganan Medis Obesitas Lanjut & Olahraga Khusus" if lang == "Bahasa Indonesia" else "📖 Advanced Weight Control and Obesity Care"
             bg_color = "linear-gradient(135deg, #cb2d3e, #ef473a)" 
 
-        # 7. Obesitas Tipe 3 (Ekstrim)
         else: 
             link_url = "https://www.halodoc.com/artikel/obesitas-morbid-ketahui-penyebab-dan-cara-mengatasinya" if lang == "Bahasa Indonesia" else "https://www.healthline.com/health/morbid-obesity"
             link_text = "📖 Panduan Penanganan Medis Obesitas Ekstrim/Morbid" if lang == "Bahasa Indonesia" else "📖 Guide to Medical Intervention for Morbid Obesity"

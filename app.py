@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # ==========================================
-# 2. INJEKSI CUSTOM CSS (ANIMASI & WARNA BARU)
+# 2. INJEKSI CUSTOM CSS (WARNA BARU & KONTRAST TINGGI)
 # ==========================================
 st.markdown("""
 <style>
@@ -26,50 +26,52 @@ st.markdown("""
         100% { background-position: 0% 50%; }
     }
     
+    /* BACKGROUND UTAMA - Gradasi Ungu Pastel ke Pink (Estetik & Segar) */
     .stApp {
-        background: linear-gradient(-45deg, #e0c3fc, #8ec5fc, #a8edea, #fed6e3);
+        background: linear-gradient(-45deg, #a18cd1, #fbc2eb, #ff9a9e, #fecfef);
         background-size: 400% 400%;
         animation: gradientAnimation 12s ease infinite; 
     }
     
-    /* MEMPERCANTIK SIDEBAR DENGAN GRADASI LEMBUT */
+    /* MENU SIDEBAR - Gradasi Peach ke Ungu (Sangat Berwarna & Indah) */
     [data-testid="stSidebar"] {
-        /* Gradasi putih ke biru pastel agar tidak plain/membosankan */
-        background: linear-gradient(180deg, #ffffff 0%, #f0f4ff 100%) !important;
-        box-shadow: 4px 0px 15px rgba(0, 0, 0, 0.05); 
+        background: linear-gradient(180deg, #fccb90 0%, #d57eeb 100%) !important;
+        box-shadow: 6px 0px 18px rgba(0, 0, 0, 0.15); 
         border-right: none;
     }
 
     /* KONTRAST TEKS HEADER */
     h1, h2, h3 {
-        color: #1c2833 !important;
+        color: #2c3e50 !important;
         font-family: 'Segoe UI', sans-serif;
         font-weight: 800 !important;
-        text-shadow: 1px 1px 0px rgba(255,255,255,0.8);
+        /* Outline putih halus agar teks selalu terbaca di atas warna cerah */
+        text-shadow: 2px 2px 0px rgba(255,255,255,0.7); 
     }
 
-    /* BATAS ANTARA TOOLS (GLASSMORPHISM EFFECT) */
+    /* BATAS ANTARA TOOLS (KONTRAST MAKSIMAL) */
+    /* Membuat latar belakang tools menjadi PUTIH SOLID dengan SHADOW TEBAL */
     .stNumberInput, .stSelectbox, .stSlider {
-        background-color: rgba(255, 255, 255, 0.85); 
+        background-color: #ffffff !important; 
         padding: 15px 20px !important;
         border-radius: 12px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        margin-bottom: 12px; 
+        box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15); /* Shadow memisahkan tools dari background */
+        border: 2px solid #f8f9fa; 
+        margin-bottom: 16px; 
     }
 
-    /* KONTRAST TEKS LABEL SLIDER & INPUT */
+    /* KONTRAST TEKS LABEL DI DALAM TOOLS */
     .stSlider [data-testid="stMarkdownContainer"] p, 
     .stNumberInput [data-testid="stMarkdownContainer"] p, 
     .stSelectbox [data-testid="stMarkdownContainer"] p {
-        color: #2c3e50 !important;
-        font-weight: 700;
+        color: #1a252f !important;
+        font-weight: 800;
         font-size: 15px;
     }
 
-    /* MEMPERCANTIK TOMBOL UTAMA (ANALISIS) DENGAN GRADASI */
+    /* MEMPERCANTIK TOMBOL UTAMA (ANALISIS) DENGAN WARNA TEGAS */
     button[kind="primary"] {
-        background: linear-gradient(90deg, #1fa2ff 0%, #12d8fa 51%, #1fa2ff 100%) !important;
+        background: linear-gradient(90deg, #2f80ed 0%, #56ccf2 100%) !important;
         background-size: 200% auto !important;
         color: white !important;
         border-radius: 25px !important; 
@@ -77,12 +79,12 @@ st.markdown("""
         padding: 12px 30px !important;
         font-weight: 800 !important;
         letter-spacing: 1.5px;
-        box-shadow: 0px 8px 15px rgba(31, 162, 255, 0.4) !important;
+        box-shadow: 0px 8px 15px rgba(47, 128, 237, 0.4) !important;
         transition: 0.5s !important;
     }
     button[kind="primary"]:hover {
         background-position: right center !important; 
-        box-shadow: 0px 12px 20px rgba(31, 162, 255, 0.6) !important;
+        box-shadow: 0px 12px 20px rgba(47, 128, 237, 0.6) !important;
         transform: translateY(-3px);
     }
 
@@ -91,14 +93,14 @@ st.markdown("""
         background-color: #ffffff;
         border-radius: 15px;
         padding: 20px;
-        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
-        border-left: 8px solid #1fa2ff; 
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
+        border-left: 8px solid #d57eeb; 
     }
 
-    /* Hover effect untuk link referensi */
+    /* Hover effect untuk link referensi medis */
     .link-box:hover {
         transform: translateY(-3px);
-        box-shadow: 0px 8px 15px rgba(0,0,0,0.15) !important;
+        box-shadow: 0px 8px 15px rgba(0,0,0,0.2) !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -152,9 +154,9 @@ with st.sidebar:
     lbl_liter = "Liter/hari" if lang == "Bahasa Indonesia" else "Liters/day"
     
     st.markdown(f"""
-    <div style="background: rgba(255, 255, 255, 0.9); padding: 15px; border-radius: 12px; border: 2px solid #3498db; box-shadow: 0px 4px 6px rgba(0,0,0,0.05);">
+    <div style="background: rgba(255, 255, 255, 0.95); padding: 15px; border-radius: 12px; border: 2px solid #ffffff; box-shadow: 0px 6px 12px rgba(0,0,0,0.1);">
         <p style="margin:0; color: #7f8c8d; font-size: 13px; font-weight: bold;">{lbl_hidrasi}</p>
-        <h2 style="margin: 5px 0 0 0; color: #2980b9;">{hidrasi_air:.2f} <span style="font-size:14px; font-weight: normal;">{lbl_liter}</span></h2>
+        <h2 style="margin: 5px 0 0 0; color: #d57eeb;">{hidrasi_air:.2f} <span style="font-size:14px; font-weight: normal;">{lbl_liter}</span></h2>
     </div>
     """, unsafe_allow_html=True)
 
@@ -353,34 +355,29 @@ with tab2:
                 else:
                     st.success("- Combine cardio and strength training 3-4 times a week.\n- Target **10.000 steps/day**.")
 
-        # --- FITUR BARU: TAUTAN DINAMIS BERDASARKAN DIAGNOSIS ---
+        # --- FITUR TAUTAN DINAMIS BERDASARKAN DIAGNOSIS ---
         st.write("")
         st.write("")
         st.markdown("### 🔗 Tautan Referensi Medis Khusus Untuk Anda" if lang == "Bahasa Indonesia" else "### 🔗 Specialized Medical References For You")
         
-        # Logika Kondisi Link
         if "Insufficient" in st.session_state['res_asli']:
-            # Kurus -> Link Menaikkan BB
             link_url = "https://www.alodokter.com/menambah-berat-badan-menjadi-ideal" if lang == "Bahasa Indonesia" else "https://www.healthline.com/nutrition/how-to-gain-weight"
             link_text = "📖 Baca Panduan Sehat Menaikkan Berat Badan" if lang == "Bahasa Indonesia" else "📖 Read Guide on How to Gain Weight Safely"
-            bg_color = "linear-gradient(to right, #f6d365 0%, #fda085 100%)" # Gradasi Oranye Terang
+            bg_color = "linear-gradient(to right, #f6d365 0%, #fda085 100%)" 
             text_color = "#fff"
             
         elif "Normal" in st.session_state['res_asli']:
-            # Normal -> Link Menjaga Kesehatan
             link_url = "https://www.halodoc.com/kesehatan/hidup-sehat" if lang == "Bahasa Indonesia" else "https://www.who.int/philippines/news/feature-stories/detail/20-health-tips-for-2020"
             link_text = "📖 Tips Mempertahankan Gaya Hidup Sehat" if lang == "Bahasa Indonesia" else "📖 Tips for Maintaining a Healthy Lifestyle"
-            bg_color = "linear-gradient(to right, #84fab0 0%, #8fd3f4 100%)" # Gradasi Hijau/Biru
+            bg_color = "linear-gradient(to right, #84fab0 0%, #8fd3f4 100%)" 
             text_color = "#155724"
             
         else: 
-            # Overweight & Obesitas -> Link Defisit Kalori / Turun BB
             link_url = "https://www.alodokter.com/diet-sehat-untuk-menurunkan-berat-badan" if lang == "Bahasa Indonesia" else "https://www.healthline.com/nutrition/how-to-lose-weight-as-fast-as-possible"
             link_text = "📖 Panduan Diet Defisit Kalori & Turun BB" if lang == "Bahasa Indonesia" else "📖 Guide to Safe Diet & Weight Loss"
-            bg_color = "linear-gradient(to right, #ff758c 0%, #ff7eb3 100%)" # Gradasi Merah Muda/Merah
+            bg_color = "linear-gradient(to right, #ff758c 0%, #ff7eb3 100%)" 
             text_color = "#fff"
             
-        # Membuat Kotak Tombol Tautan menggunakan HTML
         st.markdown(f"""
         <a href="{link_url}" target="_blank" style="text-decoration: none;">
             <div class="link-box" style="background: {bg_color}; padding: 15px 20px; border-radius: 10px; text-align: center; color: {text_color}; font-weight: 800; font-size: 16px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1); transition: all 0.3s ease;">
